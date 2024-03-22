@@ -1,0 +1,5 @@
+-tool \
+	.*;tool.bnd;readme.md;skip=true, \
+	gradle.properties;macro=true;append=true,\
+	gradlew;exec=true, \
+	*

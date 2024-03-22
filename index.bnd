@@ -1,0 +1,10 @@
+-workspace-templates \
+    bndtools/workspace-templates/gradle; \
+        name=gradle; \
+        description="Setup gradle build for bnd workspace", \
+    bndtools/workspace-templates/maven; \
+        name=maven; \
+        description="Use the maven directory layout for sources and binaries", \
+    bndtools/workspace-templates/osgi; \
+        name=osgi; \
+        description="OSGi R8 with Felix distribution"
