@@ -8,6 +8,6 @@
     bndtools/workspace-templates/osgi; \
         name=osgi; \
         description="OSGi R8 with Felix distribution", \
-    mnlipp/de.mnl.osgi/tree/b96e0a8877bad1c68cdc050d5854829253ef63bb/de.mnl.osgi.bnd.repository/workspace-template; \
+    mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
         description="Provide an OSGi repository derived from a subset of one or more maven repositories"
