@@ -10,4 +10,10 @@
         description="OSGi R8 with Felix distribution", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
-        description="Provide an OSGi repository derived from a subset of one or more maven repositories"
+        description="Provide an OSGi repository derived from a subset of one or more maven repositories", \
+    eclipse-tycho/tycho/setup/bnd-templates/pomless; \
+        name=maven-tycho-build; \
+        description="Setup a maven pomless build for bnd workspace (IDE / bndtools first).",\
+    eclipse-tycho/tycho/setup/bnd-templates/pomless-configurator/; \
+        name=maven-tycho-build2; \
+        description="Setup a maven pomless build for bnd workspace (IDE / bndtools first) including customization using a configurator pom."
