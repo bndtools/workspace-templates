@@ -6,8 +6,14 @@
         name=maven; \
         description="Use the maven directory layout for sources and binaries", \
     bndtools/workspace-templates/osgi; \
-        name=osgi; \
+        name=osgi-felix; \
         description="OSGi R8 with Felix distribution", \
+    bndtools/workspace-templates/eclipse-4.35-platform; \
+        name=osgi_eclipse_4.35_platform; \
+        description="OSGi R8 with Eclipse Platform distribution", \
+    bndtools/workspace-templates/eclipse-4.35-simurel; \
+        name=osgi_eclipse_4.35_2025-03_simurel; \
+        description="OSGi R8 with Eclipse SimuRel distribution", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
         description="Provide an OSGi repository derived from a subset of one or more maven repositories", \

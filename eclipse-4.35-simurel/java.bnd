@@ -1,0 +1,5 @@
+# simurel
+javac.source:           21
+javac.target:           21
+javac.compliance:       21
+javac.debug:            on

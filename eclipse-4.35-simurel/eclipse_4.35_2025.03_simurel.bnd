@@ -1,0 +1,14 @@
+# Eclipse Release repositories 
+eclipse.simu.name    = 2025-03
+eclipse.simu.version = 202503121000
+
+eclipse.simu.baseurl = http://download.eclipse.org/releases
+eclipse.simu.name    = "SimuRel_${eclipse.simu.name}_${eclipse.simu.version}"
+eclipse.simu.url     = "${eclipse.simu.baseurl}/${eclipse.simu.name}/${eclipse.simu.version}"
+
+# Remote Eclipse repositories
+
+-plugin.eclipse.11.simu: \
+    aQute.bnd.repository.p2.provider.P2Repository; \
+        name  = ${eclipse.simu.name}; \
+        url   = ${eclipse.simu.url}

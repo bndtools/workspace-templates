@@ -1,0 +1,14 @@
+# Eclipse Release repositories 
+eclipse.platform.name    = 4.35
+eclipse.platform.version = R-4.35-202502280140
+
+eclipse.platform.baseurl = http://download.eclipse.org/eclipse/updates
+eclipse.platform.name    = "Eclipse Platform ${eclipse.platform.name}"
+eclipse.platform.url     = "${eclipse.platform.baseurl}/${eclipse.platform.name}/${eclipse.platform.version}"
+
+# Remote Eclipse repositories
+
+-plugin.eclipse.10.platform: \
+    aQute.bnd.repository.p2.provider.P2Repository; \
+       name  = ${eclipse.platform.name}; \
+       url   = ${eclipse.platform.url}
