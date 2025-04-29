@@ -1,0 +1,18 @@
+-buildpath: \
+	osgi.annotation;version='8.0.0',\
+	osgi.core;version='8.0.0',\
+	org.apache.felix.http.servlet-api;version='1.1.2',\
+	org.osgi.service.component.annotations,\
+	org.osgi.service.http.whiteboard,\
+	org.osgi.service.servlet
+	org.osgi.service.http.whiteboard,\
+	org.osgi.service.component.annotations,\
+	org.osgi.service.servlet
+
+
+$if(javaLevel)$
+javac.source: $javaLevel$
+javac.target: $javaLevel$
+$endif$
+
+Bundle-Version: 0.0.0.\${tstamp}

@@ -8,6 +8,9 @@
     bndtools/workspace-templates/osgi; \
         name=osgi; \
         description="OSGi R8 with Felix distribution", \
+    bndtools/bnd-workspace-templates/servlet; \
+        name=servlet; \
+        description="Adds a project template project for creating a simple HTTP Servlet component for use with the HTTP Whiteboard Specification. Requires OSGi R8 Fragment.", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
         description="Provide an OSGi repository derived from a subset of one or more maven repositories", \

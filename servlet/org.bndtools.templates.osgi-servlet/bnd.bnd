@@ -1,0 +1,18 @@
+Bundle-Version: 8.0.0.${tstamp}
+
+-includeresource: resources
+-resourceonly: true
+
+category: Bndtools templates
+
+Provide-Capability: \
+	org.bndtools.template;\
+		org.bndtools.template=project; \
+		name=Simple HTTP Servlet; \
+		category=Examples; \
+		dir=template; \
+		icon="${icondata}"; \
+		help=help.xml
+
+
+icondata: data:image/gif;base64,${base64;icon.gif}
