@@ -5,14 +5,9 @@
 	org.osgi.service.component.annotations,\
 	org.osgi.service.http.whiteboard,\
 	org.osgi.service.servlet
-	org.osgi.service.http.whiteboard,\
-	org.osgi.service.component.annotations,\
-	org.osgi.service.servlet
 
 
-$if(javaLevel)$
-javac.source: $javaLevel$
-javac.target: $javaLevel$
-$endif$
+javac.source: 17
+javac.target: 17
 
-Bundle-Version: 0.0.0.\${tstamp}
+Bundle-Version: 0.1.0.\${tstamp}
