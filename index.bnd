@@ -8,7 +8,7 @@
     bndtools/workspace-templates/osgi; \
         name=osgi; \
         description="OSGi R8 with Felix distribution", \
-    chrisrueger/bnd-workspace-templates2/servlet#0c764080ba886da8d460f50c4a243a2537ca1826; \
+    chrisrueger/bnd-workspace-templates/servlet#0c764080ba886da8d460f50c4a243a2537ca1826; \
         name=servlet; \
         description="Adds a project template project for creating a simple HTTP Servlet component for use with the HTTP Whiteboard Specification. Requires OSGi R8 Fragment.", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
