@@ -12,7 +12,7 @@
 -runrequires: \
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
-	osgi.identity;filter:='(osgi.identity=$projectName$)',\
+	osgi.identity;filter:='(osgi.identity=org.bndtools.demo.webapp)',\
 	bnd.identity;id='slf4j.simple'
 -runblacklist: bnd.identity;id='slf4j.api';version='[2.0.0,3.0.0)'
 -runbundles: \
