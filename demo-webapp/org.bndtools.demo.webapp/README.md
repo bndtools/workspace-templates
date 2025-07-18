@@ -27,7 +27,7 @@ See https://bnd.bndtools.org/chapters/300-launching.html
 You can also start this web app on the CLI:
 
 ```
-bnd add workspace -f demo-servlet -f osgi myworkspace
+bnd add workspace -f demo-webapp -f osgi myworkspace
 cd myworkspace
 bnd build
 bnd run launch.bndrun
