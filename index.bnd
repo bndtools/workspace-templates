@@ -8,6 +8,9 @@
     bndtools/workspace-templates/osgi; \
         name=osgi; \
         description="OSGi R8 with Felix distribution", \
+    bndtools/workspace-templates/demo-webapp; \
+        name=demo-webapp; \
+        description="Simple Web-App example.", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
         description="Provide an OSGi repository derived from a subset of one or more maven repositories", \
