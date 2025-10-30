@@ -10,4 +10,4 @@
 javac.source: 17
 javac.target: 17
 
-Bundle-Version: 0.1.0.\${tstamp}
+Bundle-Version: 0.1.0.${tstamp}
