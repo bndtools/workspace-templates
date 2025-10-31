@@ -1,9 +1,9 @@
-# Repository for the template org.bndtools.templates.osgi-servlet
-# Source: https://github.com/bndtools/workspace-templates/servlet
-#
 # name = org.bndtools.templates.osgi-servlet
 # releaseUrl = https://repo.maven.apache.org/maven2/
 # snapshotUrl = https://oss.sonatype.org/content/repositories/snapshots/
+#
+# Repository for the template org.bndtools.templates.osgi-servlet
+# Source: https://github.com/bndtools/workspace-templates/servlet
 
 org.slf4j:slf4j-api:1.7.0
 org.slf4j:slf4j-simple:1.7.0
