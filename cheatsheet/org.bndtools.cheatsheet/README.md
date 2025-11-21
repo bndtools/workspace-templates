@@ -1,6 +1,6 @@
-# BND Macros Cheatsheet
+# BND Cheatsheet
 
-This template fragment provides a comprehensive reference for bnd macros through a well-documented `bnd.bnd` file.
+This template fragment provides a comprehensive reference for bnd macros and instructions through a well-documented `bnd.bnd` file.
 
 ## Purpose
 

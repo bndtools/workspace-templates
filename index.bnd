@@ -11,9 +11,9 @@
     bndtools/workspace-templates/demo-webapp; \
         name=demo-webapp; \
         description="Simple Web-App example. (Requires fragment: osgi)", \
-    bndtools/workspace-templates/macros-cheatsheet; \
-        name=macros-cheatsheet; \
-        description="BND macros cheatsheet - comprehensive reference and examples for all bnd macros", \
+    bndtools/workspace-templates/cheatsheet; \
+        name=cheatsheet; \
+        description="BND cheatsheet - comprehensive reference and examples for bnd macros and instructions.", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
         description="Provide an OSGi repository derived from a subset of one or more maven repositories", \
