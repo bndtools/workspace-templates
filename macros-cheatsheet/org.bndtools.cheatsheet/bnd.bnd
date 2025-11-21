@@ -1,0 +1,349 @@
+#
+# BND MACROS CHEATSHEET
+#
+# This file demonstrates the usage of bnd macros.
+# It serves as a reference guide for common macro operations.
+#
+# For complete documentation, see: https://bnd.bndtools.org/chapters/855-macros-ref.html
+#
+
+# Suppress a warning, because the final jar contains no files.
+-fixupmessages: The JAR is empty
+
+# ====================
+# STRING OPERATIONS
+# ====================
+
+# toupper / tolower - Convert case
+example.upper: ${toupper;hello world}
+# Returns: HELLO WORLD
+
+example.lower: ${tolower;HELLO WORLD}
+# Returns: hello world
+
+# trim - Remove leading/trailing whitespace
+example.trim: ${trim;  hello  }
+# Returns: hello
+
+# length - String length
+example.length: ${length;hello}
+# Returns: 5
+
+# substring - Extract part of string
+example.substring: ${substring;hello world;0;5}
+# Returns: hello
+
+# replace - Replace using regex
+example.replace: ${replace;hello world;world;Java}
+# Returns: hello Java
+
+# replacestring - Replace literal string
+example.replacestring: ${replacestring;hello;l;r}
+# Returns: herro
+
+# startswith - Check if string starts with prefix and returns the whole string if true
+example.startswith: ${startswith;hello.txt;hello}
+# Returns: hello.txt (or empty if no match)
+
+# endswith - Check if string ends with suffix and returns the whole string if true
+example.endswith: ${endswith;hello.txt;.txt}
+# Returns: hello.txt (or empty if no match)
+
+# find - Find substring position
+example.find: ${find;hello world;world}
+# Returns: 6
+
+# findlast - Find last occurrence
+example.findlast: ${findlast;hello;foobarhellobazhello}
+# Returns: 6
+
+# matches - Test regex match
+example.matches: ${matches;hello123;.*\\d+.*}
+# Returns: true
+
+# split - Split string by delimiter
+example.split: ${split;-;hello-world-test}
+# Returns: hello,world,test
+
+# ====================
+# LIST OPERATIONS
+# ====================
+
+# join - Join lists with comma
+example.join: ${join;a,b;c,d}
+# Returns: a,b,c,d
+
+# sjoin - Join with custom separator
+example.sjoin: ${sjoin;|;a,b,c}
+# Returns: a|b|c
+
+# first - Get first element
+example.first: ${first;a,b,c}
+# Returns: a
+
+# last - Get last element
+example.last: ${last;a,b,c}
+# Returns: c
+
+# get - Get element by index
+example.get: ${get;1;a,b,c}
+# Returns: b
+
+# size - Count elements
+example.size: ${size;a,b,c,d}
+# Returns: 4
+
+# reverse - Reverse list order
+example.reverse: ${reverse;a,b,c}
+# Returns: c,b,a
+
+# sort - Sort alphabetically
+example.sort: ${sort;banana,apple,cherry}
+# Returns: apple,banana,cherry
+
+# uniq - Remove duplicates
+example.uniq: ${uniq;a,b,a,c,b}
+# Returns: a,b,c
+
+# filter - Keep matching entries
+example.filter: ${filter;foo.jar,bar.txt,baz.jar;.*\\.jar}
+# Returns: foo.jar,baz.jar
+
+# filterout - Remove matching entries
+example.filterout: ${filterout;a,b,c,d;[ac]}
+# Returns: b,d
+
+# sublist - Extract range
+example.sublist: ${sublist;1;3;a,b,c,d,e}
+# Returns: b,c
+
+# indexof - Find element position
+example.indexof: ${indexof;c;a,b,c,d}
+# Returns: 2
+
+# lastindexof - Find last occurrence position
+example.lastindexof: ${lastindexof;b;a,b,c,b,d}
+# Returns: 3
+
+# ====================
+# NUMERIC OPERATIONS
+# ====================
+
+# sum - Add numbers
+example.sum: ${sum;1,2,3,4,5}
+# Returns: 15
+
+# average - Calculate mean
+example.average: ${average;1,2,3,4,5}
+# Returns: 3
+
+# max - Maximum string value
+example.max: ${max;apple,zebra,banana}
+# Returns: zebra
+
+# min - Minimum string value
+example.min: ${min;apple,zebra,banana}
+# Returns: apple
+
+# nmax - Maximum numeric value
+example.nmax: ${nmax;5,20,15,3}
+# Returns: 20
+
+# nmin - Minimum numeric value
+example.nmin: ${nmin;5,20,15,3}
+# Returns: 3
+
+# nsort - Numeric sort
+example.nsort: ${nsort;5,20,3,15}
+# Returns: 3,5,15,20
+
+# compare - String comparison (-1, 0, 1)
+example.compare: ${compare;apple;banana}
+# Returns: -1
+
+# ncompare - Numeric comparison
+example.ncompare: ${ncompare;10;20}
+# Returns: -1
+
+# vcompare - Version comparison
+example.vcompare: ${vcompare;1.0.0;2.0.0}
+# Returns: -1
+
+# vmax - Maximum version
+example.vmax: ${vmax;1.0.0,2.1.0,1.5.0}
+# Returns: 2.1.0
+
+# vmin - Minimum version
+example.vmin: ${vmin;1.0.0,2.1.0,1.5.0}
+# Returns: 1.0.0
+
+# rand - Random number (0 to n-1)
+# example.rand: ${rand;100}
+# Returns: random number 0-99
+
+# bytes - Format byte count
+example.bytes: ${bytes;1048576}
+# Returns: 1.0 Mb
+
+# ====================
+# CONDITIONAL & LOGIC
+# ====================
+
+# if - Conditional execution
+example.if: ${if;true;yes;no}
+# Returns: yes
+
+# is - Check equality
+example.is: ${is;foo;foo}
+# Returns: true
+
+# isempty - Check if empty
+example.isempty: ${isempty;}
+# Returns: true
+
+# isnumber - Check if number
+example.isnumber: ${isnumber;123}
+# Returns: true
+
+# def - Get property with default
+example.def: ${def;missing.prop;default-value}
+# Returns: default-value
+
+# ====================
+# FILE & PATH OPERATIONS
+# ====================
+
+# basedir - Get base directory
+# example.basedir: ${basedir}
+# Returns: absolute path to project directory
+
+# dir - Get directory of file
+# example.dir: ${dir;src/Main.java}
+# Returns: directory path containing the file (e.g., src)
+
+# basename - Get filename
+# example.basename: ${basename;/path/to/file.txt}
+# Returns: file.txt
+
+# extension - Get file extension
+# example.extension: ${extension;myfile.txt}
+# Returns: txt
+
+# stem - Get filename without extension
+# example.stem: ${stem;myfile.txt}
+# Returns: myfile
+
+# cat - Read file contents
+# example.cat: ${cat;example.txt}
+# Returns: file contents
+
+# base64 - Encode file as base64
+# example.base64: ${base64;example.txt}
+# Returns: base64 encoded content
+
+# isfile - Check if file exists
+# example.isfile: ${isfile;${basedir}/bnd.bnd}
+# Returns: true
+
+# isdir - Check if directory exists
+# example.isdir: ${isdir;${basedir}}
+# Returns: true
+
+
+# repo - Provides the file paths to artifact in the repositories
+# Shows absolute path to a .jar file in a repository by its coordinates.
+example.repo: ${repo;org.slf4j:slf4j-api;latest}
+# returns e.g. /Users/me/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar
+
+
+# ====================
+# ENVIRONMENT & SYSTEM
+# ====================
+
+# env - Get environment variable
+# example.env: ${env;HOME;/default/home}
+# Returns: value of HOME env var
+
+# currenttime - Current time in milliseconds
+# example.currenttime: ${currenttime}
+# Returns: milliseconds since epoch
+
+# tstamp - Formatted timestamp
+# example.tstamp: ${tstamp}
+# Returns: formatted timestamp
+
+# now - Current time in seconds
+# example.now: ${now}
+# Returns: seconds since epoch
+
+# ====================
+# VERSION & BUILD INFO
+# ====================
+
+# bndversion - bnd tool version
+# example.bndversion: ${bndversion}
+# Returns: e.g., 7.0.0
+
+# bsn - Bundle Symbolic Name
+# example.bsn: ${bsn}
+# Returns: bundle symbolic name
+
+# ====================
+# ADVANCED OPERATIONS
+# ====================
+
+# foreach - Iterate over list
+# example.foreach.template: prefix-${1}
+# example.foreach: ${foreach;example.foreach.template;a,b,c}
+# Returns: prefix-a,prefix-b,prefix-c
+
+# map - Transform list elements
+# example.map.template: [${1}]
+# example.map: ${map;example.map.template;x,y,z}
+# Returns: [x],[y],[z]
+
+# format - String formatting
+example.format: ${format;%s-%s;hello;world}
+# Returns: hello-world
+
+# literal - Create literal macro reference
+example.literal: ${literal;version}
+# Returns: ${version}
+
+# digest - Hash file (MD5, SHA-256, etc.)
+# example.digest: ${digest;SHA-256;example.txt}
+# Returns: hex hash of file
+
+# ====================
+# VALIDATION & ERRORS
+# ====================
+
+# warning - Generate warning
+# example.warning: ${warning;This is a warning message}
+# Generates a build warning
+
+# error - Generate error
+# example.error: ${error;This would fail the build}
+# Generates a build error (commented out to not break builds)
+
+# ====================
+# SPECIAL MACROS
+# ====================
+
+# random - Generate random identifier
+# example.random: ${random}
+# Returns: random UUID string
+
+# ====================
+# USAGE NOTES
+# ====================
+#
+# 1. Most macros work with both comma and semicolon as separators
+# 2. Macros can be nested: ${toupper;${first;a,b,c}}
+# 3. Lists preserve order unless explicitly sorted
+# 4. Empty strings are typically treated as false in ${if} and similar conditionals
+# 5. File paths are relative to project base directory
+# 6. Many macros support multiple arguments for flexibility
+#
+# For file-based macros (cat, base64, digest), see example.txt
+#
