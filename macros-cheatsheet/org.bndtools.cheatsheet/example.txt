@@ -1,0 +1,9 @@
+Hello World!
+
+This is an example file for testing bnd file macros:
+- ${cat;example.txt} - reads this file
+- ${base64;example.txt} - encodes this file as base64
+- ${digest;MD5;example.txt} - computes MD5 hash of this file
+- ${digest;SHA-256;example.txt} - computes SHA-256 hash of this file
+
+Use this file to experiment with file-based bnd macros.
