@@ -3,9 +3,14 @@
 #
 # This file demonstrates the usage of bnd macros and other instructions.
 # It serves as a reference guide for common macro operations.
+# In the Eclipse bnd Editor you can hover over the keys or use the Effective tab
+# to see the actual resolved / expanded values.
 #
 # For complete documentation, see: https://bnd.bndtools.org/chapters/855-macros-ref.html
 #
+
+Bundle-SymbolicName: org.bndtools.cheatsheet
+-includeresource: example.txt
 
 # Suppress a warning, because the final jar contains no files.
 -fixupmessages: The JAR is empty
@@ -64,6 +69,39 @@ example.matches: ${matches;hello123;.*\\d+.*}
 # split - Split string by delimiter
 example.split: ${split;-;hello-world-test}
 # Returns: hello,world,test
+
+# apply - Convert list to macro arguments
+# example.apply.args: slf4j.api,1.7,HIGHEST
+# example.apply: ${apply;repo;${example.apply.args}}
+# Returns: ${repo;com.example.foo;3.12;HIGHEST}
+
+# basenameext - Get basename optionally minus extension
+example.basenameext: ${basenameext;/foo.bar/abcdef.def;def}
+# Returns: abcdef
+
+# subst - Regex substitution with optional replacement limit
+example.subst: ${subst;com.example.package;\\.;-}
+# Returns: com-example-package
+
+# replacelist - Replace pattern in list elements
+example.replacelist: ${replacelist;foo,bar,baz;a;X}
+# Returns: foo,bXr,bXz
+
+# toclasspath - Convert class names to file paths
+example.toclasspath: ${toclasspath;com.example.Main;false}
+# Returns: com/example/Main
+
+# toclassname - Convert file paths to class names
+example.toclassname: ${toclassname;com/example/Main.class}
+# Returns: com.example.Main
+
+# unescape - Convert escape sequences to control characters
+example.unescape: ${unescape;hello\\nworld}
+# Returns: hello<newline>world
+
+# uri - Convert file path to URI
+example.uri: ${uri;example.txt}
+# Returns: file:///path/to/example.txt
 
 # ====================
 # LIST OPERATIONS
@@ -125,6 +163,32 @@ example.indexof: ${indexof;c;a,b,c,d}
 example.lastindexof: ${lastindexof;b;a,b,c,b,d}
 # Returns: 3
 
+# list - Merge property values into a list
+example.list.prop1: a,b,c
+example.list.prop2: d,e
+example.list: ${list;example.list.prop1;example.list.prop2}
+# Returns: a,b,c,d,e
+
+# removeall - Remove elements from first list that are in second list
+example.removeall: ${removeall;a,b,c,d;b,d}
+# Returns: a,c
+
+# retainall - Keep only elements that are in both lists
+example.retainall: ${retainall;a,b,c,d;b,c,e}
+# Returns: b,c
+
+# select - Alias for filter, keep matching entries
+example.select: ${select;foo.jar,bar.txt,baz.jar;.*\\.jar}
+# Returns: foo.jar,baz.jar
+
+# reject - Alias for filterout, remove matching entries
+example.reject: ${reject;a,b,c,d;[ac]}
+# Returns: b,d
+
+# separator - Get the file separator character
+example.separator: ${separator}
+# Returns: / (Unix) or \ (Windows)
+
 # ====================
 # NUMERIC OPERATIONS
 # ====================
@@ -178,7 +242,7 @@ example.vmin: ${vmin;1.0.0,2.1.0,1.5.0}
 # Returns: 1.0.0
 
 # rand - Random number (0 to n-1)
-# example.rand: ${rand;100}
+example.rand: ${rand;100}
 # Returns: random number 0-99
 
 # bytes - Format byte count
@@ -214,45 +278,76 @@ example.def: ${def;missing.prop;default-value}
 # ====================
 
 # basedir - Get base directory
-# example.basedir: ${basedir}
+example.basedir: ${basedir}
 # Returns: absolute path to project directory
 
 # dir - Get directory of file
-# example.dir: ${dir;src/Main.java}
+example.dir: ${dir;example.txt}
 # Returns: directory path containing the file (e.g., src)
 
 # basename - Get filename
-# example.basename: ${basename;/path/to/file.txt}
+example.basename: ${basename;example.txt}
 # Returns: file.txt
 
 # extension - Get file extension
-# example.extension: ${extension;myfile.txt}
+example.extension: ${extension;example.txt}
 # Returns: txt
 
 # stem - Get filename without extension
-# example.stem: ${stem;myfile.txt}
+example.stem: ${stem;example.txt}
 # Returns: myfile
 
 # cat - Read file contents
-# example.cat: ${cat;example.txt}
+example.cat: ${cat;example.txt}
 # Returns: file contents
 
 # base64 - Encode file as base64
-# example.base64: ${base64;example.txt}
+example.base64: ${base64;example.txt}
 # Returns: base64 encoded content
 
 # isfile - Check if file exists
-# example.isfile: ${isfile;${basedir}/bnd.bnd}
+example.isfile: ${isfile;${basedir}/bnd.bnd}
 # Returns: true
 
 # isdir - Check if directory exists
-# example.isdir: ${isdir;${basedir}}
+example.isdir: ${isdir;${basedir}}
 # Returns: true
 
+# fileuri - Convert file path to file URI
+example.fileuri: ${fileuri;example.txt}
+# Returns: file:///path/to/example.txt
+
+# findfile - Recursively find files in directory
+example.findfile: ${findfile;.;*.txt}
+# Returns: list of .java files in src directory
+
+# findname - Find resources by filename with regex
+# example.findname: ${findname;.*\\.txt}
+# Returns: list of .txt files in bundle
+
+# findpath - Find resources by full path with regex
+# example.findpath: ${findpath;META-INF/.*}
+# Returns: list of files under META-INF
+
+# findproviders - Find resources in workspace repositories
+example.findproviders: ${findproviders;osgi.service}
+# Returns: list of bundles providing osgi.service
+
+# fmodified - Get latest modification time from files
+example.fmodified: ${fmodified;example.txt}
+# Returns: timestamp in milliseconds
+
+# osfile - Create OS-specific absolute file path
+example.osfile: ${osfile;${basedir};example.txt}
+# Returns: OS-specific absolute path
+
+# thisfile - Get absolute path of current properties file
+example.thisfile: ${thisfile}
+# Returns: /path/to/current/bnd.bnd
 
 # repo - Provides the file paths to artifact in the repositories
 # Shows absolute path to a .jar file in a repository by its coordinates.
-example.repo: ${repo;org.slf4j:slf4j-api;latest}
+# example.repo: ${repo;org.slf4j:slf4j-api;latest}
 # returns e.g. /Users/me/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar
 
 
@@ -261,45 +356,86 @@ example.repo: ${repo;org.slf4j:slf4j-api;latest}
 # ====================
 
 # env - Get environment variable
-# example.env: ${env;HOME;/default/home}
+example.env: ${env;HOME;/default/home}
 # Returns: value of HOME env var
 
 # currenttime - Current time in milliseconds
-# example.currenttime: ${currenttime}
+example.currenttime: ${currenttime}
 # Returns: milliseconds since epoch
 
 # tstamp - Formatted timestamp
-# example.tstamp: ${tstamp}
+example.tstamp: ${tstamp}
 # Returns: formatted timestamp
 
-# now - Current time in seconds
-# example.now: ${now}
+# now - Current time as string
+example.now: ${now}
 # Returns: seconds since epoch
+
+# system - Execute system command and return output
+# example.system: ${system;git rev-parse HEAD}
+# Returns: Git commit hash (fails build on error)
+
+# system_allow_fail - Execute system command, ignore failures
+# example.system_allow_fail: ${system-allow-fail;git branch --show-current}
+# Returns: Git branch name (warns on error, doesn't fail build)
+
+# githead - Get Git commit SHA of current HEAD
+example.githead: ${githead}
+# Returns: Git commit hash (e.g., A1B2C3D4...)
+
+# propertiesdir - Get directory of current properties file
+example.propertiesdir: ${propertiesdir}
+# Returns: /path/to/directory
+
+# propertiesname - Get filename of current properties file
+example.propertiesname: ${propertiesname}
+# Returns: bnd.bnd
+
+# pathseparator - Get OS path separator character
+example.pathseparator: ${pathseparator}
+# Returns: : (Unix) or ; (Windows)
 
 # ====================
 # VERSION & BUILD INFO
 # ====================
 
 # bndversion - bnd tool version
-# example.bndversion: ${bndversion}
+example.bndversion: ${bndversion}
 # Returns: e.g., 7.0.0
 
-# bsn - Bundle Symbolic Name
-# example.bsn: ${bsn}
+bsn: Bundle Symbolic Name
+example.bsn: ${bsn}
 # Returns: bundle symbolic name
+
+# maven_version - Convert Maven version to OSGi format 
+# DEPRECATED: Use ${version_cleanup} instead for broader applicability
+example.maven_version: ${maven_version;1.2.3-SNAPSHOT}
+# Returns: 1.2.3.SNAPSHOT
+
+# version_cleanup - Clean up version to OSGi format
+example.version_cleanup: ${version_cleanup;1.2.3-SNAPSHOT}
+# Returns: 1.2.3.SNAPSHOT
+
+# versionmask - Modify version using a template (alias: version)
+example.versionmask: ${versionmask;===;1.2.3.qualifier}
+# Returns: 1.2.3
+
+# workspace - Get absolute path to workspace directory
+example.workspace: ${workspace}
+# Returns: /path/to/workspace
 
 # ====================
 # ADVANCED OPERATIONS
 # ====================
 
 # foreach - Iterate over list
-# example.foreach.template: prefix-${1}
-# example.foreach: ${foreach;example.foreach.template;a,b,c}
+example.foreach.template: prefix-${1}
+example.foreach: ${foreach;example.foreach.template;a,b,c}
 # Returns: prefix-a,prefix-b,prefix-c
 
 # map - Transform list elements
-# example.map.template: [${1}]
-# example.map: ${map;example.map.template;x,y,z}
+example.map.template: [${1}]
+example.map: ${map;example.map.template;x,y,z}
 # Returns: [x],[y],[z]
 
 # format - String formatting
@@ -311,8 +447,45 @@ example.literal: ${literal;version}
 # Returns: ${version}
 
 # digest - Hash file (MD5, SHA-256, etc.)
-# example.digest: ${digest;SHA-256;example.txt}
+example.digest: ${digest;SHA-256;example.txt}
 # Returns: hex hash of file
+
+# template - Expand Parameters entries using template
+example.template.params: a;attr=1,b;attr=2
+example.template: ${template;example.template.params;${@attr}}
+# Returns: 1,2
+
+# long2date - Convert millisecond timestamp to readable date
+example.long2date: ${long2date;1700000000000}
+# Returns: human-readable date string
+
+# range - Create semantic version range
+example.range: ${range;[==,+);1.2.3}
+# Returns: [1.2,2)
+
+# frange - Generate OSGi filter for version range
+example.frange: ${frange;1.2.3}
+# Returns: (&(version>=1.2.3)(!(version>=2.0.0)))
+
+# glob - Convert glob pattern to regex
+example.glob: ${glob;*.jar}
+# Returns: regex pattern matching .jar files
+
+# global - Access user settings from ~/.bnd/settings.json
+example.global: ${global;maven.username;default-user}
+# Returns: value from settings.json or default
+
+# gestalt - Access environment description properties
+# example.gestalt: ${gestalt;platform;os}
+# Returns: platform OS attribute value
+
+# md5 - Calculate MD5 digest of bundle resource
+# TODO example.md5: ${md5;META-INF/MANIFEST.MF;hex}
+# Returns: MD5 hash of resource
+
+# sha1 - Calculate SHA-1 digest of bundle resource
+# TODO example.sha1: ${sha1;example.txt;hex}
+# Returns: SHA-1 hash of resource
 
 # ====================
 # VALIDATION & ERRORS
@@ -331,8 +504,124 @@ example.literal: ${literal;version}
 # ====================
 
 # random - Generate random identifier
-# example.random: ${random}
+example.random: ${random}
 # Returns: random UUID string
+
+# ====================
+# OSGI-SPECIFIC MACROS
+# ====================
+
+# classes - List classes matching filter in bundle
+# example.classes: ${classes;IMPLEMENTS;javax.servlet.Servlet}
+# Returns: comma-separated list of matching classes
+
+# Basic decoration
+parameters = a, b
+parameters.extra = c, d
+parameters+ = (c|d);attr=X
+example.decorated: ${decorated;parameters}
+ # returns: a,b,c;attr=X,d;attr=X
+
+
+# driver - Get driver capabilities
+example.driver: ${driver}
+# Returns: driver capability namespace
+
+# ee - Get execution environment requirements
+# example.ee: ${ee}
+# Returns: execution environment requirement filter
+
+# exporters - Get packages exported by a bundle
+# example.exporters: ${exporters;org.osgi.framework}
+# Returns: bundles exporting the package
+
+# exports - Get exported packages from bundle
+# example.exports: ${exports}
+# Returns: comma-separated list of exported packages
+
+# imports - Get imported packages from bundle
+# example.imports: ${imports}
+# Returns: comma-separated list of imported packages
+
+# packages - List packages matching filter
+# example.packages: ${packages;ANNOTATED;org.osgi.service.component.annotations.Component}
+# Returns: packages with Component annotation
+
+# packageattribute - Get package attribute value
+# example.packageattribute: ${packageattribute;com.example.api;version}
+# Returns: version attribute of the package
+
+# permissions - Generate permission policy entries
+# example.permissions: ${permissions}
+# Returns: OSGi permission policy entries
+
+# native_capability - Generate native capability header
+example.native_capability: ${native_capability}
+# Returns: OSGi native capability string
+
+# ====================
+# PROJECT PATH MACROS
+# ====================
+
+# p_allsourcepath - Get all source paths including dependencies
+example.p_allsourcepath: ${p_allsourcepath}
+# Returns: all source paths
+
+# p_bootclasspath - Get boot classpath
+example.p_bootclasspath: ${p_bootclasspath}
+# Returns: boot classpath entries
+
+# p_buildpath - Get build path (compile classpath)
+example.p_buildpath: ${p_buildpath}
+# Returns: build classpath entries
+
+# p_dependson - Get project dependencies
+example.p_dependson: ${p_dependson}
+# Returns: list of dependent projects
+
+# p_output - Get output directory path
+example.p_output: ${p_output}
+# Returns: output directory path
+
+# p_sourcepath - Get source path
+example.p_sourcepath: ${p_sourcepath}
+# Returns: source directory paths
+
+# p_testpath - Get test classpath
+example.p_testpath: ${p_testpath}
+# Returns: test classpath entries
+
+# ====================
+# REPOSITORY OPERATIONS
+# ====================
+
+# repos - List all repository names
+example.repos: ${repos}
+# Returns: comma-separated repository names
+
+# repodigests - Get repository digests
+# example.repodigests: ${repodigests;org.osgi.core}
+# Returns: digest hashes from repositories
+
+# ====================
+# UTILITY MACROS
+# ====================
+
+# ide - Read Java compiler settings from Eclipse IDE configuration
+example.ide: ${ide;javac.source;17}
+# Returns: true if running in IDE, false otherwise
+
+# lsa - List files with absolute paths
+example.lsa: ${lsa;.;*.txt}
+# Returns: absolute paths to .java files
+
+# lsr - List files with relative paths
+example.lsr: ${lsr;.;*.txt}
+# Returns: relative paths to .java files
+
+# path - Create path with proper separators
+example.path: ${path;lib/a.jar;lib/b.jar}
+# Returns: lib/a.jar:lib/b.jar (Unix) or lib/a.jar;lib/b.jar (Windows)
 
 # ====================
 # USAGE NOTES
