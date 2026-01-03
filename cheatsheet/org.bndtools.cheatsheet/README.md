@@ -59,3 +59,41 @@ For complete macro documentation, see:
 This cheatsheet is based on the macro documentation improvements from:
 - [PR #6948 - Document macro java methods](https://github.com/bndtools/bnd/pull/6948)
 - Documentation files in `docs/_macros/` directory of the bnd repository
+
+## bnd CLI Cheatsheet
+
+The following section showcases some use bnd cli commands.
+
+
+### Compare / diff the MANIFEST of two .jar files
+
+This is useful e.g. if you want to see if an update of your / a library added certain OSGi headers. For example it is important to know that there are new mandatory `Import-Package` headers which would affect consumers. 
+See https://bnd.bndtools.org/commands/diff.html
+
+```
+bnd diff -m path/to/assertj-core-4.0.0-SNAPSHOT.jar path/to/assertj-core-3.27.6.jar
+```
+
+Example output:
+
+```
+CHANGED    MANIFEST   <manifest>
+ ADDED      HEADER     Bundle-Version:4.0.0
+ CHANGED    HEADER     Export-Package
+  CHANGED    CLAUSE     org.assertj.core.annotation
+   REMOVED    PARAMETER  version:3.27.6
+   ADDED      PARAMETER  version:4.0.0
+```
+
+The `-m` option refers to "MANIFEST". Without the `-m` option you get much more output also to changes in .class files.
+
+### Show Manifest of a .jar file
+
+This then shows the Manifest in a nicely formatted way, which is much more readable then the plain MANIFEST.MF which has special formatting limits (e.g. max line lenth 72 bytes which is hard to read for long lines).
+See https://bnd.bndtools.org/commands/print.html
+
+```
+bnd print -m  path/to/assertj-core-4.0.0-SNAPSHOT.jar
+```
+
+
