@@ -96,4 +96,12 @@ See https://bnd.bndtools.org/commands/print.html
 bnd print -m  path/to/assertj-core-4.0.0-SNAPSHOT.jar
 ```
 
+This can also be used to print all MANIFESTs in all jars of a folder.
+
+```
+bnd print -m  */generated/*.jar > allmanifests.txt
+```
+
+This is useful if you want to assemble a text file with all MANIFEST.MF files prior to a release of your app or library for review by consumers.
+
 
