@@ -1,4 +1,4 @@
-# BND Cheatsheet
+# bnd / bndtools Cheatsheet (Cheat sheet)
 
 This template fragment provides a comprehensive reference for bnd macros and instructions through a well-documented `bnd.bnd` file.
 
@@ -59,6 +59,7 @@ For complete macro documentation, see:
 This cheatsheet is based on the macro documentation improvements from:
 - [PR #6948 - Document macro java methods](https://github.com/bndtools/bnd/pull/6948)
 - Documentation files in `docs/_macros/` directory of the bnd repository
+- bnd / bndtools Forum https://bnd.discourse.group/c/tips/10
 
 ## bnd CLI Cheatsheet
 
