@@ -8,6 +8,10 @@
     bndtools/workspace-templates/osgi; \
         name=osgi; \
         description="OSGi R8 with Felix distribution", \
+    bndtools/workspace-templates/osgi-testing; \
+        name=osgi-testing; \
+        description="Adds JUnit 5 and OSGi testing support to the workspace."; \
+        require=osgi, \
     bndtools/workspace-templates/demo-webapp; \
         name=demo-webapp; \
         description="Simple Web-App example. (Requires fragment: osgi)", \

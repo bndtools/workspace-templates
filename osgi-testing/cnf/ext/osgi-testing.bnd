@@ -1,0 +1,50 @@
+-plugin.Testing: \
+    aQute.bnd.repository.maven.provider.MavenBndRepository; \
+        snapshotUrl=http://repository.apache.org/snapshots/; \
+        releaseUrl=https://repo.maven.apache.org/maven2/; \
+        index=./ext/osgi-testing-central.maven; \
+        readOnly=true; \
+        name="Testing Bundles"
+
+junit.platform.version=1.14.2
+junit.jupiter.version=5.14.2
+assertj.version=3.27.7
+mockito.version=4.11.0
+objenesis.version=3.3
+bytebuddy.version=1.18.4
+osgi.test.version=1.3.0
+
+# opentest4j is a transitive of JUnit Jupiter, pinned for OSGi explicitness
+opentest4j.version=1.3.0
+
+# apiguardian is a transitive of JUnit Jupiter, pinned for OSGi explicitness
+apiguardian.version=1.1.2
+
+junit: \
+    junit-platform-commons;version=latest,\
+    junit-platform-engine;version=latest,\
+    junit-platform-launcher;version=latest,\
+    junit-jupiter-api;version=latest,\
+    junit-jupiter-engine;version=latest,\
+    junit-jupiter-params;version=latest,\
+    assertj-core;version=latest,\
+    org.opentest4j;version=latest,\
+    org.apiguardian:apiguardian-api;version=latest
+
+# For writing mocks
+mockito: \
+    org.mockito.mockito-core;version=latest,\
+    net.bytebuddy.byte-buddy;version=latest,\
+    org.objenesis;version=latest
+-runsystempackages.objenesis: sun.misc,sun.reflect
+
+# OSGi-aware test extensions
+osgitest: \
+    org.osgi.test.common;version=latest,\
+    org.osgi.test.junit5;version=latest,\
+    org.osgi.test.assertj.framework;version=latest
+
+## testpath for all projects 
+# ${mockito} and ${osgitest} opt-in per project
+-testpath.all: \
+    ${junit}
