@@ -25,7 +25,3 @@ debug-bundles: \
     osgi.identity;filter:='(osgi.identity=org.apache.felix.webconsole.plugins.ds)'
 
 
-# This is the version of JUnit that will be used at build time and run time
-junit: org.apache.servicemix.bundles.junit
-mockito: org.mockito.mockito-core,\
-  org.objenesis
