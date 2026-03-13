@@ -11,11 +11,11 @@
     bndtools/workspace-templates/osgi-testing; \
         name=osgi-testing; \
         description="Adds JUnit 5 and OSGi testing support to the workspace."; \
-        require=osgi, \
+        require="bndtools/workspace-templates/osgi", \
     bndtools/workspace-templates/demo-webapp; \
         name=demo-webapp; \
         description="Simple Web-App example. (Requires fragment: osgi)"; \
-        require=osgi-testing, \
+        require="bndtools/workspace-templates/osgi,bndtools/workspace-templates/osgi-testing", \
     bndtools/workspace-templates/cheatsheet; \
         name=cheatsheet; \
         description="BND cheatsheet - comprehensive reference and examples for bnd macros and instructions.", \
