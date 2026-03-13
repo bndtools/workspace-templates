@@ -25,5 +25,5 @@
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
 	osgi.promise;version='[8.1.0,8.1.1)',\
 	org.bndtools.demo.webapp;version=snapshot,\
-	slf4j.api;version='[1.7.0,1.7.1)',\
-	slf4j.simple;version='[1.7.0,1.7.1)'
+	slf4j.api;version='[1.7.36,2.0.0)',\
+	slf4j.simple;version='[1.7.36,2.0.0)'
