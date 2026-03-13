@@ -14,7 +14,8 @@
         require=osgi, \
     bndtools/workspace-templates/demo-webapp; \
         name=demo-webapp; \
-        description="Simple Web-App example. (Requires fragment: osgi)", \
+        description="Simple Web-App example. (Requires fragment: osgi)";
+        require="osgi,osgi-testing", \
     bndtools/workspace-templates/cheatsheet; \
         name=cheatsheet; \
         description="BND cheatsheet - comprehensive reference and examples for bnd macros and instructions.", \
