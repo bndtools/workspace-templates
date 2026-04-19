@@ -6,7 +6,7 @@
 # In the Eclipse bnd Editor you can hover over the keys or use the Effective tab
 # to see the actual resolved / expanded values.
 #
-# For complete documentation, see: https://bnd.bndtools.org/chapters/855-macros-ref.html
+# For complete documentation, see: https://bnd.bndtools.org/macros/
 #
 
 Bundle-SymbolicName: org.bndtools.cheatsheet
