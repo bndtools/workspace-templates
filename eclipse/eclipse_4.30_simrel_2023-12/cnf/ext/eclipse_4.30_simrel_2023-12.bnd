@@ -1,0 +1,24 @@
+# Eclipse Simultaneous Release repository 
+eclipse.simrel.baseurl = https://download.eclipse.org/releases
+
+eclipse.platform.version.4.30      = 4.30
+eclipse.simrel.version.2023-12     = 2023-12
+eclipse.simrel.reltag.202312061001 = 202312061001
+
+# p2 repository: reads the p2 site directly; location is the generated index file.
+eclipse.p2.repository.2023-12: \
+    aQute.bnd.repository.p2.provider.P2Repository; \
+        name     = 'Eclipse P2 SimRel ${eclipse.platform.version.4.30}/${eclipse.simrel.version.2023-12}'; \
+        url      = '${eclipse.simrel.baseurl}/${eclipse.simrel.version.2023-12}'; \
+        location = '${.}/eclipse_${eclipse.platform.version.4.30}_simrel_${eclipse.simrel.version.2023-12}_p2.index.xml.gz'
+
+# Indexed OSGi repository: uses index.xml.gz inside the p2 index archive, cached under cnf/cache.
+eclipse.osgi.repository.2023-12: \
+    aQute.bnd.repository.osgi.OSGiRepository; \
+        name      = 'Eclipse SimRel ${eclipse.platform.version.4.30}/${eclipse.simrel.version.2023-12}'; \
+        locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.30}_simrel_${eclipse.simrel.version.2023-12}_p2.index.xml.gz/index.xml.gz}'; \
+        cache     = '${build}/cache/ecl_${eclipse.platform.version.4.30}'
+
+# Exactly one is active: p2 repository if useIndexed is false, OSGi indexed repository if true (see eclipse-repo-config.bnd).
+-plugin.p2.eclipse.simrel_2023-12: ${if;${useIndexed};;${eclipse.p2.repository.2023-12}}
+-plugin.osgi.eclipse.simrel_2023-12: ${if;${useIndexed};${eclipse.osgi.repository.2023-12};}

@@ -1,0 +1,23 @@
+# Eclipse Platform Release repository
+eclipse.platform.baseurl = https://download.eclipse.org/eclipse/updates
+
+eclipse.platform.version.4.36 = 4.36
+eclipse.platform.reltag.R-4.36-202505281830 = R-4.36-202505281830
+
+# p2 repository: reads the p2 site directly; location is the generated index file.
+eclipse.p2.repository.4.36: \
+    aQute.bnd.repository.p2.provider.P2Repository; \
+        name     = 'Eclipse P2 Platform ${eclipse.platform.version.4.36}'; \
+        url      = '${eclipse.platform.baseurl}/${eclipse.platform.version.4.36}'; \
+        location = '${.}/eclipse_${eclipse.platform.version.4.36}_platform_p2.index.xml.gz'
+
+# Indexed OSGi repository: uses index.xml.gz inside the p2 index archive, cached under cnf/cache.
+eclipse.osgi.repository.4.36: \
+    aQute.bnd.repository.osgi.OSGiRepository; \
+        name      = 'Eclipse Platform ${eclipse.platform.version.4.36}'; \
+        locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.36}_platform_p2.index.xml.gz/index.xml.gz}'; \
+        cache     = '${build}/cache/ecl_${eclipse.platform.version.4.36}'
+
+# Exactly one is active: p2 repository if useIndexed is false, OSGi indexed repository if true (see eclipse-repo-config.bnd).
+-plugin.p2.eclipse.platform_4.36: ${if;${useIndexed};;${eclipse.p2.repository.4.36}}
+-plugin.osgi.eclipse.platform_4.36: ${if;${useIndexed};${eclipse.osgi.repository.4.36};}
