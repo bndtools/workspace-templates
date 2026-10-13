@@ -36,11 +36,11 @@
         description="Eclipse Simultaneous Release 4.41/202609091000", \
     bndtools/workspace-templates/eclipse_4.40_platform; \
         name="Eclipse Platform 4.40"; \
-        description="Eclipse Platform R-4.40-202606010713", \
+        description="Eclipse Platform R-4.40-202606010713"; \
         archived=true, \
     bndtools/workspace-templates/eclipse_4.40_simrel_2026-06; \
         name="Eclipse SimRel 4.40/2026-06"; \
-        description="Eclipse Simultaneous Release 4.40/202606101000", \
+        description="Eclipse Simultaneous Release 4.40/202606101000"; \
         archived=true, \
     bndtools/workspace-templates/eclipse_4.39_platform; \
         name="Eclipse Platform 4.39"; \
