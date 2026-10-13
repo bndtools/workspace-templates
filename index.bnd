@@ -114,11 +114,11 @@
         name="Eclipse SimRel 4.31/2024-03"; \
         description="Eclipse Simultaneous Release 4.31/202403131000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse_4.30_platform; \
+    bndtools/workspace-templates/eclipse/eclipse_4.30_platform; \
         name="Eclipse Platform 4.30"; \
         description="Eclipse Platform R-4.30-202312010110"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse_4.30_simrel_2023-12; \
+    bndtools/workspace-templates/eclipse/eclipse_4.30_simrel_2023-12; \
         name="Eclipse SimRel 4.30/2023-12"; \
         description="Eclipse Simultaneous Release 4.30/202312061001"; \
         archived=true
