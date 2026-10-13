@@ -27,98 +27,98 @@
         description="Setup a maven pomless build for bnd workspace (IDE / bndtools first).",\
     eclipse-tycho/tycho/setup/bnd-templates/pomless-configurator/; \
         name=maven-tycho-build2; \
-        description="Setup a maven pomless build for bnd workspace (IDE / bndtools first) including customization using a configurator pom."
-    bndtools/workspace-templates/eclipse/eclipse_4.41_platform; \
+        description="Setup a maven pomless build for bnd workspace (IDE / bndtools first) including customization using a configurator pom.", \
+    bndtools/workspace-templates/eclipse_4.41_platform; \
         name="Eclipse Platform 4.41"; \
         description="Eclipse Platform R-4.41-202608281142", \
-    bndtools/workspace-templates/eclipse/eclipse_4.41_simrel_2026-09; \
+    bndtools/workspace-templates/eclipse_4.41_simrel_2026-09; \
         name="Eclipse SimRel 4.41/2026-09"; \
         description="Eclipse Simultaneous Release 4.41/202609091000", \
-    bndtools/workspace-templates/eclipse/eclipse_4.40_platform; \
+    bndtools/workspace-templates/eclipse_4.40_platform; \
         name="Eclipse Platform 4.40"; \
         description="Eclipse Platform R-4.40-202606010713", \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.40_simrel_2026-06; \
+    bndtools/workspace-templates/eclipse_4.40_simrel_2026-06; \
         name="Eclipse SimRel 4.40/2026-06"; \
         description="Eclipse Simultaneous Release 4.40/202606101000", \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.39_platform; \
+    bndtools/workspace-templates/eclipse_4.39_platform; \
         name="Eclipse Platform 4.39"; \
         description="Eclipse Platform R-4.39-202602260420"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.39_simrel_2026-03; \
+    bndtools/workspace-templates/eclipse_4.39_simrel_2026-03; \
         name="Eclipse SimRel 4.39/2026-03"; \
         description="Eclipse Simultaneous Release 4.39/202603111000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.38_platform; \
+    bndtools/workspace-templates/eclipse_4.38_platform; \
         name="Eclipse Platform 4.38"; \
         description="Eclipse Platform R-4.38-202512010920"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.38_simrel_2025-12; \
+    bndtools/workspace-templates/eclipse_4.38_simrel_2025-12; \
         name="Eclipse SimRel 4.38/2025-12"; \
         description="Eclipse Simultaneous Release 4.38/202512101000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.37_platform; \
+    bndtools/workspace-templates/eclipse_4.37_platform; \
         name="Eclipse Platform 4.37"; \
         description="Eclipse Platform R-4.37-202509050730"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.37_simrel_2025-09; \
+    bndtools/workspace-templates/eclipse_4.37_simrel_2025-09; \
         name="Eclipse SimRel 4.37/2025-09"; \
         description="Eclipse Simultaneous Release 4.37/202509101001"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.36_platform; \
+    bndtools/workspace-templates/eclipse_4.36_platform; \
         name="Eclipse Platform 4.36"; \
         description="Eclipse Platform R-4.36-202505281830"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.36_simrel_2025-06; \
+    bndtools/workspace-templates/eclipse_4.36_simrel_2025-06; \
         name="Eclipse SimRel 4.36/2025-06"; \
         description="Eclipse Simultaneous Release 4.36/202506111000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.35_platform; \
+    bndtools/workspace-templates/eclipse_4.35_platform; \
         name="Eclipse Platform 4.35"; \
         description="Eclipse Platform R-4.35-202502280140"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.35_simrel_2025-03; \
+    bndtools/workspace-templates/eclipse_4.35_simrel_2025-03; \
         name="Eclipse SimRel 4.35/2025-03"; \
         description="Eclipse Simultaneous Release 4.35/202503121000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.34_platform; \
+    bndtools/workspace-templates/eclipse_4.34_platform; \
         name="Eclipse Platform 4.34"; \
         description="Eclipse Platform R-4.34-202411201800"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.34_simrel_2024-12; \
+    bndtools/workspace-templates/eclipse_4.34_simrel_2024-12; \
         name="Eclipse SimRel 4.34/2024-12"; \
         description="Eclipse Simultaneous Release 4.34/202412041000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.33_platform; \
+    bndtools/workspace-templates/eclipse_4.33_platform; \
         name="Eclipse Platform 4.33"; \
         description="Eclipse Platform R-4.33-202409030240"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.33_simrel_2024-09; \
+    bndtools/workspace-templates/eclipse_4.33_simrel_2024-09; \
         name="Eclipse SimRel 4.33/2024-09"; \
         description="Eclipse Simultaneous Release 4.33/202409111000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.32_platform; \
+    bndtools/workspace-templates/eclipse_4.32_platform; \
         name="Eclipse Platform 4.32"; \
         description="Eclipse Platform R-4.32-202406010610"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.32_simrel_2024-06; \
+    bndtools/workspace-templates/eclipse_4.32_simrel_2024-06; \
         name="Eclipse SimRel 4.32/2024-06"; \
         description="Eclipse Simultaneous Release 4.32/202406121000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.31_platform; \
+    bndtools/workspace-templates/eclipse_4.31_platform; \
         name="Eclipse Platform 4.31"; \
         description="Eclipse Platform R-4.31-202402290520"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.31_simrel_2024-03; \
+    bndtools/workspace-templates/eclipse_4.31_simrel_2024-03; \
         name="Eclipse SimRel 4.31/2024-03"; \
         description="Eclipse Simultaneous Release 4.31/202403131000"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.30_platform; \
+    bndtools/workspace-templates/eclipse_4.30_platform; \
         name="Eclipse Platform 4.30"; \
         description="Eclipse Platform R-4.30-202312010110"; \
         archived=true, \
-    bndtools/workspace-templates/eclipse/eclipse_4.30_simrel_2023-12; \
+    bndtools/workspace-templates/eclipse_4.30_simrel_2023-12; \
         name="Eclipse SimRel 4.30/2023-12"; \
         description="Eclipse Simultaneous Release 4.30/202312061001"; \
         archived=true
