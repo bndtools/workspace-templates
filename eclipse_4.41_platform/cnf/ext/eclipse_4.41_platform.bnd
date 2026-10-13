@@ -22,7 +22,7 @@ eclipse.osgi.repository.4.41: \
 #   true  = OSGiRepository backed by the pre-generated *_p2.index.xml.gz (fast, no p2 metadata download)
 #   false = P2Repository that reads the p2 site directly from download.eclipse.org
 # The index is generated from the p2 repository (see 'location' in the eclipse_* file).
-useIndexed = true
+useIndexed = false
 
 # Exactly one is active: p2 repository if useIndexed is false, OSGi indexed repository if true (see eclipse-repo-config.bnd).
 -plugin.p2.eclipse.platform_4.41: ${if;${useIndexed};;${eclipse.p2.repository.4.41}}
