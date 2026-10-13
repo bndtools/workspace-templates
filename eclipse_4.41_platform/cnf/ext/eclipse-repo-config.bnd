@@ -1,5 +1,0 @@
-# Selects which repository type the eclipse_* file in this folder activates.
-#   true  = OSGiRepository backed by the pre-generated *_p2.index.xml.gz (fast, no p2 metadata download)
-#   false = P2Repository that reads the p2 site directly from download.eclipse.org
-# The index is generated from the p2 repository (see 'location' in the eclipse_* file).
-useIndexed = true

@@ -18,6 +18,12 @@ eclipse.osgi.repository.4.38: \
         locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.38}_platform_p2.index.xml.gz/index.xml.gz}'; \
         cache     = '${build}/cache/ecl_${eclipse.platform.version.4.38}'
 
+# Selects which repository type the eclipse_* file in this folder activates.
+#   true  = OSGiRepository backed by the pre-generated *_p2.index.xml.gz (fast, no p2 metadata download)
+#   false = P2Repository that reads the p2 site directly from download.eclipse.org
+# The index is generated from the p2 repository (see 'location' in the eclipse_* file).
+useIndexed = true
+
 # Exactly one is active: p2 repository if useIndexed is false, OSGi indexed repository if true (see eclipse-repo-config.bnd).
 -plugin.p2.eclipse.platform_4.38: ${if;${useIndexed};;${eclipse.p2.repository.4.38}}
 -plugin.osgi.eclipse.platform_4.38: ${if;${useIndexed};${eclipse.osgi.repository.4.38};}

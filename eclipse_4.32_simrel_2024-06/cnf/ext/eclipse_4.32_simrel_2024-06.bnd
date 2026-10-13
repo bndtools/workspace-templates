@@ -19,6 +19,12 @@ eclipse.osgi.repository.2024-06: \
         locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.32}_simrel_${eclipse.simrel.version.2024-06}_p2.index.xml.gz/index.xml.gz}'; \
         cache     = '${build}/cache/ecl_${eclipse.platform.version.4.32}'
 
+# Selects which repository type the eclipse_* file in this folder activates.
+#   true  = OSGiRepository backed by the pre-generated *_p2.index.xml.gz (fast, no p2 metadata download)
+#   false = P2Repository that reads the p2 site directly from download.eclipse.org
+# The index is generated from the p2 repository (see 'location' in the eclipse_* file).
+useIndexed = true
+
 # Exactly one is active: p2 repository if useIndexed is false, OSGi indexed repository if true (see eclipse-repo-config.bnd).
 -plugin.p2.eclipse.simrel_2024-06: ${if;${useIndexed};;${eclipse.p2.repository.2024-06}}
 -plugin.osgi.eclipse.simrel_2024-06: ${if;${useIndexed};${eclipse.osgi.repository.2024-06};}
