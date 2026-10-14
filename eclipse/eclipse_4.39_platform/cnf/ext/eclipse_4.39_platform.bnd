@@ -5,25 +5,25 @@ eclipse.platform.version.4.39 = 4.39
 eclipse.platform.reltag.R-4.39-202602260420 = R-4.39-202602260420
 
 # p2 repository: reads the p2 site directly; location is the generated index file.
-eclipse.p2.repository.4.39: \
+eclipse.repo.4.39.p2: \
     aQute.bnd.repository.p2.provider.P2Repository; \
-        name     = 'Eclipse P2 Platform ${eclipse.platform.version.4.39}'; \
-        url      = '${eclipse.platform.baseurl}/${eclipse.platform.version.4.39}'; \
-        location = '${.}/eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz'
+    name     = 'Eclipse Platform ${eclipse.platform.version.4.39} <P2>'; \
+    url      = '${eclipse.platform.baseurl}/${eclipse.platform.version.4.39}'; \
+    location = 'eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz'; \
+    cache    = '${build}/cache/ecl_${eclipse.platform.version.4.39}'
 
 # Indexed OSGi repository: uses index.xml.gz inside the p2 index archive, cached under cnf/cache.
-eclipse.osgi.repository.4.39: \
+eclipse.repo.4.39.osgi: \
     aQute.bnd.repository.osgi.OSGiRepository; \
-        name      = 'Eclipse Platform ${eclipse.platform.version.4.39}'; \
-        locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz/index.xml.gz}'; \
-        cache     = '${build}/cache/ecl_${eclipse.platform.version.4.39}'
+    name      = 'Eclipse Platform ${eclipse.platform.version.4.39} <OSGi>'; \
+    locations = '${fileuri;eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz}'; \
+    cache     = '${build}/cache/ecl_${eclipse.platform.version.4.39}'
 
-# Selects which repository type the eclipse_* file in this folder activates.
-#   true  = OSGiRepository backed by the pre-generated *_p2.index.xml.gz (fast, no p2 metadata download)
-#   false = P2Repository that reads the p2 site directly from download.eclipse.org
-# The index is generated from the p2 repository (see 'location' in the eclipse_* file).
-useIndexed = false
+# OSGiRepository requires the P2Repository index to be created first.
+# indexed=false selects P2Repository, which creates the index from download.eclipse.org.
+# indexed=true selects OSGiRepository, which uses the generated *_p2.index.xml.gz.
+indexed = false
 
-# Exactly one is active: p2 repository if useIndexed is false, OSGi indexed repository if true (see eclipse-repo-config.bnd).
--plugin.p2.eclipse.platform_4.39: ${if;${useIndexed};;${eclipse.p2.repository.4.39}}
--plugin.osgi.eclipse.platform_4.39: ${if;${useIndexed};${eclipse.osgi.repository.4.39};}
+# Exactly one repository is active, selected by indexed.
+-plugin.eclipse.repo.4.39.p2: ${if;${indexed};;${eclipse.repo.4.39.p2}}
+-plugin.eclipse.repo.4.39.osgi: ${if;${indexed};${eclipse.repo.4.39.osgi};}
