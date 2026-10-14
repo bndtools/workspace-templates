@@ -9,14 +9,14 @@ eclipse.repo.4.33.p2: \
     aQute.bnd.repository.p2.provider.P2Repository; \
     name     = 'Eclipse Platform ${eclipse.platform.version.4.33} <P2>'; \
     url      = '${eclipse.platform.baseurl}/${eclipse.platform.version.4.33}'; \
-    location = 'eclipse_${eclipse.platform.version.4.33}_platform_p2.index.xml.gz'; \
+    location = '${.}/eclipse_${eclipse.platform.version.4.33}_platform_p2.index.xml.gz'; \
     cache    = '${build}/cache/ecl_${eclipse.platform.version.4.33}'
 
 # Indexed OSGi repository: uses index.xml.gz inside the p2 index archive, cached under cnf/cache.
 eclipse.repo.4.33.osgi: \
     aQute.bnd.repository.osgi.OSGiRepository; \
     name      = 'Eclipse Platform ${eclipse.platform.version.4.33} <OSGi>'; \
-    locations = '${fileuri;eclipse_${eclipse.platform.version.4.33}_platform_p2.index.xml.gz}'; \
+    locations = '${fileuri;eclipse_${eclipse.platform.version.4.33}_platform_p2.index.xml.gz'; \
     cache     = '${build}/cache/ecl_${eclipse.platform.version.4.33}'
 
 # OSGiRepository requires the P2Repository index to be created first.
