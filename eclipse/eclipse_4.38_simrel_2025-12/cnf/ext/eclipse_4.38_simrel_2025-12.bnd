@@ -1,4 +1,4 @@
-# Eclipse Simultaneous Release repository 
+# Eclipse Simultaneous Release repository
 eclipse.simrel.baseurl = https://download.eclipse.org/releases
 
 eclipse.platform.version.4.38      = 4.38
@@ -6,25 +6,25 @@ eclipse.simrel.version.2025-12     = 2025-12
 eclipse.simrel.reltag.202512101000 = 202512101000
 
 # p2 repository: reads the p2 site directly; location is the generated index file.
-eclipse.p2.repository.2025-12: \
+eclipse.repo.2025-12.p2: \
     aQute.bnd.repository.p2.provider.P2Repository; \
-        name     = 'Eclipse P2 SimRel ${eclipse.platform.version.4.38}/${eclipse.simrel.version.2025-12}'; \
+        name     = 'Eclipse SimRel ${eclipse.platform.version.4.38}/${eclipse.simrel.version.2025-12} <P2>'; \
         url      = '${eclipse.simrel.baseurl}/${eclipse.simrel.version.2025-12}'; \
-        location = '${.}/eclipse_${eclipse.platform.version.4.38}_simrel_${eclipse.simrel.version.2025-12}_p2.index.xml.gz'
+        location = '${.}/eclipse_${eclipse.platform.version.4.38}_simrel_${eclipse.simrel.version.2025-12}_p2.index.xml.gz'; \
+        cache    = '${build}/cache/ecl_${eclipse.simrel.version.2025-12}'
 
 # Indexed OSGi repository: uses index.xml.gz inside the p2 index archive, cached under cnf/cache.
-eclipse.osgi.repository.2025-12: \
+eclipse.repo.2025-12.osgi: \
     aQute.bnd.repository.osgi.OSGiRepository; \
-        name      = 'Eclipse SimRel ${eclipse.platform.version.4.38}/${eclipse.simrel.version.2025-12}'; \
-        locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.38}_simrel_${eclipse.simrel.version.2025-12}_p2.index.xml.gz/index.xml.gz}'; \
+        name      = 'Eclipse SimRel ${eclipse.platform.version.4.38}/${eclipse.simrel.version.2025-12} <OSGi>'; \
+        locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.38}_simrel_${eclipse.simrel.version.2025-12}_p2.index.xml.gz}'; \
         cache     = '${build}/cache/ecl_${eclipse.platform.version.4.38}'
 
-# Selects which repository type the eclipse_* file in this folder activates.
-#   true  = OSGiRepository backed by the pre-generated *_p2.index.xml.gz (fast, no p2 metadata download)
-#   false = P2Repository that reads the p2 site directly from download.eclipse.org
-# The index is generated from the p2 repository (see 'location' in the eclipse_* file).
-useIndexed = false
+# OSGiRepository requires the P2Repository index to be created first.
+# indexed=false selects P2Repository, which creates the index from download.eclipse.org.
+# indexed=true selects OSGiRepository, which uses the generated *_p2.index.xml.gz.
+indexed = false
 
-# Exactly one is active: p2 repository if useIndexed is false, OSGi indexed repository if true (see eclipse-repo-config.bnd).
--plugin.p2.eclipse.simrel_2025-12: ${if;${useIndexed};;${eclipse.p2.repository.2025-12}}
--plugin.osgi.eclipse.simrel_2025-12: ${if;${useIndexed};${eclipse.osgi.repository.2025-12};}
+# Exactly one repository is active, selected by indexed.
+-plugin.eclipse.simrel_2025-12.p2: ${if;${indexed};;${eclipse.repo.2025-12.p2}}
+-plugin.eclipse.simrel_2025-12.osgi: ${if;${indexed};${eclipse.repo.2025-12.osgi};}

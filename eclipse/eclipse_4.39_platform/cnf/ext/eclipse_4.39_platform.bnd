@@ -7,17 +7,17 @@ eclipse.platform.reltag.R-4.39-202602260420 = R-4.39-202602260420
 # p2 repository: reads the p2 site directly; location is the generated index file.
 eclipse.repo.4.39.p2: \
     aQute.bnd.repository.p2.provider.P2Repository; \
-    name     = 'Eclipse Platform ${eclipse.platform.version.4.39} <P2>'; \
-    url      = '${eclipse.platform.baseurl}/${eclipse.platform.version.4.39}'; \
-    location = '${.}/eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz'; \
-    cache    = '${build}/cache/ecl_${eclipse.platform.version.4.39}'
+        name     = 'Eclipse Platform ${eclipse.platform.version.4.39} <P2>'; \
+        url      = '${eclipse.platform.baseurl}/${eclipse.platform.version.4.39}'; \
+        location = '${.}/eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz'; \
+        cache    = '${build}/cache/ecl_${eclipse.platform.version.4.39}'
 
 # Indexed OSGi repository: uses index.xml.gz inside the p2 index archive, cached under cnf/cache.
 eclipse.repo.4.39.osgi: \
     aQute.bnd.repository.osgi.OSGiRepository; \
-    name      = 'Eclipse Platform ${eclipse.platform.version.4.39} <OSGi>'; \
-    locations = '${fileuri;eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz'; \
-    cache     = '${build}/cache/ecl_${eclipse.platform.version.4.39}'
+        name      = 'Eclipse Platform ${eclipse.platform.version.4.39} <OSGi>'; \
+        locations = '${fileuri;eclipse_${eclipse.platform.version.4.39}_platform_p2.index.xml.gz}'; \
+        cache     = '${build}/cache/ecl_${eclipse.platform.version.4.39}'
 
 # OSGiRepository requires the P2Repository index to be created first.
 # indexed=false selects P2Repository, which creates the index from download.eclipse.org.
