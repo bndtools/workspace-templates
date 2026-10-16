@@ -1,0 +1,14 @@
+javac.source: 21
+javac.target: 21
+javac.compliance: 21
+
+-buildpath: \
+    org.eclipse.osgi,\
+    org.eclipse.equinox.app
+
+-includeresource: ./root/
+
+Bundle-SymbolicName: ${project.name};singleton:=true
+Bundle-Version: 0.1.0.${tstamp;yyyyMMdd-HHmmss}
+
+Private-Package: example.rcp.headless

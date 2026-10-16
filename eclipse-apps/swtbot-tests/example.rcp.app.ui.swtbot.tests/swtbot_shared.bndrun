@@ -1,0 +1,14 @@
+-tester: biz.aQute.junit
+-testunresolved: false
+Test-Cases: example.rcp.app.ui.swtbot.tests.SamplePartSWTBotTest
+
+-runproperties.swtbot: \
+    osgi.clean=true,\
+    launch.storage.dir=_rt/swtbot_cfg,\
+    tester.separatethread=true,\
+    tester.unresolved=false
+
+-runrequires.swtbot: \
+    osgi.identity;filter:='(osgi.identity=org.eclipse.swtbot.swt.finder)',\
+    osgi.identity;filter:='(osgi.identity=org.eclipse.swtbot.junit4_x)',\
+    osgi.identity;filter:='(osgi.identity=example.rcp.app.ui.swtbot.tests)'

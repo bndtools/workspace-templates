@@ -1,0 +1,18 @@
+javac.source: 21
+javac.target: 21
+javac.compliance: 21
+
+-buildpath: \
+    jakarta.inject.jakarta.inject-api,\
+    jakarta.annotation-api,\
+    org.eclipse.e4.rcp;type=org.eclipse.update.feature
+
+-includeresource: ./root/
+
+Bundle-SymbolicName: ${project.name};singleton:=true
+Bundle-Version: 0.1.0.${tstamp;yyyyMMdd-HHmmss}
+
+Private-Package: \
+    example.rcp.app.ui,\
+    example.rcp.app.ui.handlers,\
+    example.rcp.app.ui.parts

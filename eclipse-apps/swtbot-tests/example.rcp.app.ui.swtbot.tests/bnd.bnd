@@ -1,0 +1,26 @@
+javac.source: 21
+javac.target: 21
+javac.compliance: 21
+
+-buildpath: \
+    org.eclipse.core.runtime,\
+    org.eclipse.equinox.common,\
+    org.eclipse.osgi,\
+    org.eclipse.swt,\
+    org.eclipse.swt.cocoa.macosx.aarch64,\
+    org.eclipse.swt.cocoa.macosx.x86_64,\
+    org.eclipse.swt.gtk.linux.x86_64,\
+    org.eclipse.swt.win32.win32.x86_64,\
+    org.eclipse.swtbot.swt.finder,\
+    org.junit,\
+    org.eclipse.swtbot.junit4_x
+
+Bundle-SymbolicName: ${project.name};singleton:=true
+Bundle-Version: 0.1.0.${tstamp;yyyyMMdd-HHmmss}
+Private-Package: example.rcp.app.ui.swtbot.tests
+
+Test-Cases: ${classes;CONCRETE;ANNOTATED;org.junit.Test}
+-nojunitosgi: true
+
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.33.0,4.0.0)"
+Import-Package: !org.eclipse.core.runtime,*

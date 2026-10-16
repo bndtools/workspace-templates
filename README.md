@@ -7,4 +7,5 @@ When bndtools creates a new workspace, it will allow the user to check a number 
 
 Learn more about [Template Fragments in bnd / bndtools](https://bnd.bndtools.org/chapters/620-template-fragments.html#template-fragments).
 
-
+See [Eclipse Application Templates](eclipse-apps/README.md) for headless, SWT,
+Eclipse 4 product, and SWTBot examples using the latest Eclipse Platform fragment.

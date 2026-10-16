@@ -1,0 +1,4 @@
+-include: app.ui_shared.bndrun
+-runsystemcapabilities: osgi.native;osgi.native.osname:List<String>="linux";osgi.native.processor:List<String>="x86-64"
+-runproperties.platform: osgi.ws=gtk,osgi.arch=x86_64,osgi.os=linux
+-runblacklist: osgi.identity;filter:='(|(osgi.identity=*macosx*)(osgi.identity=*win32*)(osgi.identity=*aarch64*)(osgi.identity=*ppc64le*))'

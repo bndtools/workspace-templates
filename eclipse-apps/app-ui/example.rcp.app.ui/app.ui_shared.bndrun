@@ -1,0 +1,14 @@
+-runee: JavaSE-21
+-runfw: org.eclipse.osgi;version='[3.16,4)'
+-resolve.effective: active
+-runproperties: \
+    eclipse.product=example.rcp.app.ui.product,\
+    launch.keep=false,\
+    launch.storage.dir=_rt/cfg
+
+-runrequires: \
+    osgi.identity;filter:='(osgi.identity=org.bndtools.applaunch)',\
+    osgi.identity;filter:='(osgi.identity=example.rcp.app.ui)',\
+    bnd.identity;id=org.eclipse.e4.rcp;type=org.eclipse.update.feature
+
+-runstartlevel: order=sortbynameversion,begin=-1

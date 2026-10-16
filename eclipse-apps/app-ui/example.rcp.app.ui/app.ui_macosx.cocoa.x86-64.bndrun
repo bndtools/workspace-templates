@@ -1,0 +1,5 @@
+-include: app.ui_shared.bndrun
+-runvm: -XstartOnFirstThread
+-runsystemcapabilities: osgi.native;osgi.native.osname:List<String>="macosx";osgi.native.processor:List<String>="x86-64"
+-runproperties.platform: osgi.ws=cocoa,osgi.arch=x86_64,osgi.os=macosx
+-runblacklist: osgi.identity;filter:='(|(osgi.identity=*linux*)(osgi.identity=*win32*)(osgi.identity=*aarch64*))'

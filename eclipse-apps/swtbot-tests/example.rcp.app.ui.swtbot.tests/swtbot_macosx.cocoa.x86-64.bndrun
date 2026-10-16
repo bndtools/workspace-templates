@@ -1,0 +1,3 @@
+-include: \
+    ${workspace}/example.rcp.app.ui/app.ui_macosx.cocoa.x86-64.bndrun,\
+    swtbot_shared.bndrun

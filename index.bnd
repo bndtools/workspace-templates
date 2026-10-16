@@ -19,6 +19,22 @@
     bndtools/workspace-templates/cheatsheet; \
         name=cheatsheet; \
         description="BND cheatsheet - comprehensive reference and examples for bnd macros and instructions.", \
+    bndtools/workspace-templates/eclipse-apps/headless; \
+        name="Eclipse RCP Headless"; \
+        description="Headless Equinox application example."; \
+        require="bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
+    bndtools/workspace-templates/eclipse-apps/ui; \
+        name="Eclipse RCP SWT"; \
+        description="SWT and JFace dialog application example."; \
+        require="bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
+    bndtools/workspace-templates/eclipse-apps/app-ui; \
+        name="Eclipse RCP E4 Application"; \
+        description="Eclipse 4 application with model, handlers, and CSS."; \
+        require="bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
+    bndtools/workspace-templates/eclipse-apps/swtbot-tests; \
+        name="Eclipse RCP SWTBot Tests"; \
+        description="SWTBot UI tests for the Eclipse 4 application example."; \
+        require="bndtools/workspace-templates/eclipse-apps/app-ui,bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
         description="Provide an OSGi repository derived from a subset of one or more maven repositories", \

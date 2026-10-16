@@ -1,0 +1,11 @@
+-runee: JavaSE-21
+-runfw: org.eclipse.osgi;version='[3.16,4)'
+-resolve.effective: active
+-runproperties: \
+    launch.keep=false,\
+    launch.storage.dir=_rt/cfg,\
+    eclipse.application=example.rcp.headless.application
+
+-runrequires: \
+    osgi.identity;filter:='(osgi.identity=org.bndtools.applaunch)',\
+    osgi.identity;filter:='(osgi.identity=example.rcp.headless)'
