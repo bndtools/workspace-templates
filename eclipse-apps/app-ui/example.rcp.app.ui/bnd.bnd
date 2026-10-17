@@ -3,9 +3,9 @@ javac.target: 21
 javac.compliance: 21
 
 -buildpath: \
-    jakarta.inject.jakarta.inject-api,\
-    jakarta.annotation-api,\
-    org.eclipse.e4.rcp;type=org.eclipse.update.feature
+    jakarta.inject.jakarta.inject-api;version='2.0',\
+    jakarta.annotation-api;version='3.0',\
+    org.eclipse.e4.rcp;type='org.eclipse.update.feature'
 
 -includeresource: ./root/
 
