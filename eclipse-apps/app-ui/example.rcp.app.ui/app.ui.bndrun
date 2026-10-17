@@ -1,0 +1,2 @@
+-include: app.ui_shared.bndrun
+-runvm: -XstartOnFirstThread
