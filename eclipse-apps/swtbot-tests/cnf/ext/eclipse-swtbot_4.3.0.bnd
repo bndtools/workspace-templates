@@ -1,0 +1,28 @@
+# Eclipse Platform Release repository
+eclipse.technology.baseurl = https://download.eclipse.org/technology
+
+swtbot-version-4.3.0: 4.3.0
+
+# p2 repository: reads the p2 site directly; location is the generated index file.
+eclipse.swtbot.4.3.0.p2: \
+    aQute.bnd.repository.p2.provider.P2Repository; \
+        name     = 'Eclipse SWTBot ${swtbot-version-4.3.0} <P2>'; \
+        url      = '${eclipse.technology.baseurl}/swtbot/releases/${swtbot-version-4.3.0}/'; \
+        location = '${.}/eclipse-swtbot-${swtbot-version-4.3.0}-index.xml.gz'; \
+        cache    = '${build}/cache/ecl-swtbot-${swtbot-version-4.3.0}'
+
+# Indexed OSGi repository: uses index.xml.gz inside the p2 index archive, cached under cnf/cache.
+eclipse.swtbot.4.3.0.osgi: \
+    aQute.bnd.repository.osgi.OSGiRepository; \
+        name      = 'Eclipse SWTBot ${swtbot-version-4.3.0} <OSGi>'; \
+        locations = '${fileuri;${.}/eclipse-swtbot-${swtbot-version-4.3.0}-index.xml.gz}'; \
+        cache     = '${build}/cache/ecl_${swtbot-version-4.3.0}'
+
+# OSGiRepository requires the P2Repository index to be created first.
+# indexed=false selects P2Repository and creates the index from download.eclipse.org.
+# indexed=true selects OSGiRepository and uses the generated *_p2.index.xml.gz.
+indexed = true
+
+# Exactly one repository is active, selected by indexed.
+-plugin.eclipse.swtbot.4.3.0.p2: ${if;${indexed};;${eclipse.swtbot.4.3.0.p2}}
+-plugin.eclipse.swtbot.4.3.0.osgi: ${if;${indexed};${eclipse.swtbot.4.3.0.osgi};}
