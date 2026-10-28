@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.runnable.ApplicationLauncher;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -24,12 +25,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
 import org.eclipse.swtbot.swt.finder.junit.SWTBotJunit4ClassRunner;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
 import org.eclipse.swtbot.swt.finder.utils.SWTUtils;
 import org.eclipse.swtbot.swt.finder.waits.DefaultCondition;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotMenu;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.junit.AfterClass;
@@ -74,9 +77,6 @@ public class SamplePartSWTBotTest {
 
     @BeforeClass
     public static void beforeClass() throws InterruptedException {
-        SWTBotPreferences.TIMEOUT        = TIMEOUT_MS;
-        SWTBotPreferences.PLAYBACK_DELAY = 100;
-
         Bundle self = FrameworkUtil.getBundle(SamplePartSWTBotTest.class);
 
         // Derive the project directory from the bundle jar location
@@ -97,9 +97,8 @@ public class SamplePartSWTBotTest {
             screenshotsDir = new File(System.getProperty("java.io.tmpdir"),
                     "swtbot-screenshots");
         }
+        final File screenshotDirectory = screenshotsDir;
         screenshotsDir.mkdirs();
-        SWTBotPreferences.SCREENSHOTS_DIR = screenshotsDir.getAbsolutePath();
-        System.out.println("[SWTBot] screenshots dir: " + screenshotsDir.getAbsolutePath());
 
         // When running via bnd CLI with aQute.junit.separatethread=true, the
         // test thread starts in BundleActivator.start() BEFORE the bnd launcher
@@ -131,14 +130,47 @@ public class SamplePartSWTBotTest {
 
         // 2. Wait for the SWT Display — created by the E4 app on the main thread.
         //    Works in both bnd CLI and Eclipse IDE.
-        while (Display.getDefault() == null && System.currentTimeMillis() < deadline) {
-            Thread.sleep(200);
+        Display display = null;
+        while (display == null && System.currentTimeMillis() < deadline) {
+            try {
+                display = Display.getDefault();
+            } catch (SWTException ex) {
+                if (ex.code != SWT.ERROR_THREAD_INVALID_ACCESS) throw ex;
+                Thread.sleep(200);
+            }
         }
-        if (Display.getDefault() == null) {
+        if (display == null) {
             throw new IllegalStateException(
                 "SWT Display not created within " + TIMEOUT_MS + " ms. "
                 + "Check that org.bndtools.applaunch is in -runbundles.");
         }
+
+        final Display swtDisplay = display;
+        final boolean[] mainWindowReady = { false };
+        while (!mainWindowReady[0] && System.currentTimeMillis() < deadline) {
+            swtDisplay.syncExec(() -> {
+                for (Shell shell : swtDisplay.getShells()) {
+                    if (MAIN_WINDOW_TITLE.equals(shell.getText())) {
+                        mainWindowReady[0] = true;
+                        break;
+                    }
+                }
+            });
+            if (!mainWindowReady[0]) Thread.sleep(200);
+        }
+        if (!mainWindowReady[0]) {
+            throw new IllegalStateException(
+                "Main application window not created within " + TIMEOUT_MS + " ms.");
+        }
+
+        // SWTBotPreferences initializes AWT's keyboard detector. Initialize it
+        // on the SWT thread to avoid a Cocoa AWT/SWT startup deadlock.
+        swtDisplay.syncExec(() -> {
+            SWTBotPreferences.SCREENSHOTS_DIR = screenshotDirectory.getAbsolutePath();
+            SWTBotPreferences.TIMEOUT        = TIMEOUT_MS;
+            SWTBotPreferences.PLAYBACK_DELAY = 100;
+        });
+        System.out.println("[SWTBot] screenshots dir: " + screenshotsDir.getAbsolutePath());
 
         platformErrors = Collections.synchronizedList(new ArrayList<>());
         logListener = (status, plugin) -> {
@@ -245,7 +277,23 @@ public class SamplePartSWTBotTest {
         captureShell(mainShell, "03_before_quit_shell.png");
         captureSWT(mainShell, "03_before_quit_swt.png");
 
-        bot.menu("File").menu("Quit").click();
+        if (SWTUtils.isMac()) {
+            final MenuItem[] quitItem = { null };
+            display.syncExec(() -> {
+                for (MenuItem item : display.getSystemMenu().getItems()) {
+                    if (item.getText().startsWith("Quit ")) {
+                        quitItem[0] = item;
+                        break;
+                    }
+                }
+            });
+            if (quitItem[0] == null) {
+                throw new IllegalStateException("macOS application Quit menu item not found.");
+            }
+            new SWTBotMenu(quitItem[0]).click();
+        } else {
+            bot.menu("File").menu("Quit").click();
+        }
         quitWatchdog.join(TIMEOUT_MS);
 
         // ── Step 5: Wait for the main window to close ─────────────────────────

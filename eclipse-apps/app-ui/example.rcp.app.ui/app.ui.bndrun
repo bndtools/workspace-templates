@@ -1,2 +1,4 @@
 -include: app.ui_shared.bndrun
--runvm: -XstartOnFirstThread
+-runvm: \
+	-XstartOnFirstThread,\
+	--enable-native-access=ALL-UNNAMED
