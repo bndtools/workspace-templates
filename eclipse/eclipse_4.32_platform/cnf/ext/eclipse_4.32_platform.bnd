@@ -16,14 +16,14 @@ eclipse.repo.4.32.p2: \
 eclipse.repo.4.32.osgi: \
     aQute.bnd.repository.osgi.OSGiRepository; \
         name      = 'Eclipse Platform ${eclipse.platform.version.4.32} <OSGi>'; \
-        locations = '${fileuri;eclipse_${eclipse.platform.version.4.32}_platform_p2.index.xml.gz}'; \
+        locations = '${fileuri;${.}/eclipse_${eclipse.platform.version.4.32}_platform_p2.index.xml.gz}'; \
         cache     = '${build}/cache/ecl_${eclipse.platform.version.4.32}'
 
 # OSGiRepository requires the P2Repository index to be created first.
 # indexed=false selects P2Repository andcreates the index from download.eclipse.org.
 # indexed=true selects OSGiRepository anduses the generated *_p2.index.xml.gz.
-indexed = false
+indexed.ecl-4.32 = true
 
 # Exactly one repository is active, selected by indexed.
--plugin.eclipse.repo.4.32.p2: ${if;${indexed};;${eclipse.repo.4.32.p2}}
--plugin.eclipse.repo.4.32.osgi: ${if;${indexed};${eclipse.repo.4.32.osgi};}
+-plugin.eclipse.repo.4.32.p2: ${if;${indexed.ecl-4.32};;${eclipse.repo.4.32.p2}}
+-plugin.eclipse.repo.4.32.osgi: ${if;${indexed.ecl-4.32};${eclipse.repo.4.32.osgi};}

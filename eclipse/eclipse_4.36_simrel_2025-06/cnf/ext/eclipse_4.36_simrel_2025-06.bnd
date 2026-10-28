@@ -23,8 +23,8 @@ eclipse.repo.2025-06.osgi: \
 # OSGiRepository requires the P2Repository index to be created first.
 # indexed=false selects P2Repository and creates the index from download.eclipse.org.
 # indexed=true selects OSGiRepository and uses the generated *_p2.index.xml.gz.
-indexed = false
+indexed.ecl-2025-06 = true
 
 # Exactly one repository is active, selected by indexed.
--plugin.eclipse.simrel_2025-06.p2: ${if;${indexed};;${eclipse.repo.2025-06.p2}}
--plugin.eclipse.simrel_2025-06.osgi: ${if;${indexed};${eclipse.repo.2025-06.osgi};}
+-plugin.eclipse.simrel_2025-06.p2: ${if;${indexed.ecl-2025-06};;${eclipse.repo.2025-06.p2}}
+-plugin.eclipse.simrel_2025-06.osgi: ${if;${indexed.ecl-2025-06};${eclipse.repo.2025-06.osgi};}
