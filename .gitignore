@@ -16,3 +16,5 @@ Archive
 bin/
 target/
 *.code-workspace
+/testbed/work/
+/testbed/.cache/

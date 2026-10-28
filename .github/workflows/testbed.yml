@@ -1,0 +1,123 @@
+name: Fragment testbed
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      include_archived:
+        description: Also test archived Eclipse fragments individually
+        type: boolean
+        default: true
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testbed-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testbed:
+    name: ${{ matrix.os }} / bnd ${{ matrix.bnd }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        bnd: [release, snapshot]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install xvfb
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -q && sudo apt-get install -y -q xvfb
+
+      - name: Install bash 5
+        if: runner.os == 'macOS'
+        run: brew list bash >/dev/null 2>&1 || brew install bash
+
+      - name: Run testbed
+        id: run
+        shell: bash
+        run: |
+          flags="--individual --all-in-one"
+          if [[ "${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.include_archived) }}" == "true" ]]; then
+            flags="$flags --include-archived"
+          fi
+          BASH=bash
+          # macOS ships bash 3.2; the testbed needs bash >= 4
+          if [[ "$RUNNER_OS" == "macOS" ]]; then BASH="$(brew --prefix)/bin/bash"; fi
+          "$BASH" testbed/testbed.sh --bnd "${{ matrix.bnd }}" $flags --work-dir testbed/work/ci
+
+      - name: Step summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f testbed/work/ci/REPORT.md ]]; then
+            # the summary cannot link into the artifact; keep the summary tables only
+            sed -n '1,/^## Issues/p' testbed/work/ci/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+            echo "Full report with logs: artifact testbed-${{ matrix.os }}-${{ matrix.bnd }}" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No report produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload report and kept workspaces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testbed-${{ matrix.os }}-${{ matrix.bnd }}
+          path: |
+            testbed/work/ci
+            !testbed/work/ci/zips
+            !testbed/work/ci/**/cnf/cache/**
+            !testbed/work/ci/**/_rt/**
+            !testbed/work/ci/**/generated/**/*.jar
+          if-no-files-found: warn
+          retention-days: 14
+
+  summary:
+    name: Combined report
+    needs: testbed
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: testbed-*
+          path: reports
+
+      - name: Combine
+        shell: bash
+        run: |
+          {
+            echo "# Fragment testbed - all platforms"
+            echo
+            echo "| Job | Result | Report |"
+            echo "|---|---|---|"
+            for d in reports/testbed-*; do
+              name="${d#reports/}"
+              if [[ -f "$d/REPORT.md" ]]; then
+                res="$(grep -m1 -oE '[0-9]+ test\(s\), [0-9]+ failed, [0-9]+ with warnings' "$d/REPORT.md" || echo 'unknown')"
+                echo "| $name | $res | [REPORT.md]($name/REPORT.md) |"
+              else
+                echo "| $name | no report | |"
+              fi
+            done
+          } > reports/REPORT.md
+          cat reports/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: testbed-all
+          path: reports
+          retention-days: 14
