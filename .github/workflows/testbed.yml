@@ -138,14 +138,14 @@ jobs:
             echo
             # per fragment result taken from each job's summary table
             perl -e '
-              my (%res, %tests, @jobs);
+              my (%res, %tests, @jobs, %dir);
               for my $d (sort glob("reports/testbed-*")) {
                 (my $job = $d) =~ s{^reports/testbed-}{}; $job =~ s/-latest//;
-                push @jobs, $job;
+                push @jobs, $job; (my $rel = $d) =~ s{^reports/}{}; $dir{$job} = $rel;
                 open my $fh, "<", "$d/REPORT.md" or next;
                 while (<$fh>) {
-                  next unless /^\| \[([^\]]+)\]\(#[^)]*\) \|.*\| \*\*(PASS|WARN|FAIL)\*\*/;
-                  $res{$1}{$job} = $2; $tests{$1} = 1;
+                  next unless /^\| \[([^\]]+)\]\(#([^)]*)\) \|.*\| \*\*(PASS|WARN|FAIL)\*\*/;
+                  $res{$1}{$job} = "[$3]($rel/REPORT.md#$2)"; $tests{$1} = 1;
                 }
               }
               print "| Fragment | ", join(" | ", @jobs), " |\n";
