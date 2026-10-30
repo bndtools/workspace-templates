@@ -133,6 +133,27 @@ jobs:
                 echo "| $name | no report | |"
               fi
             done
+            echo
+            echo "## Fragments x jobs"
+            echo
+            # per fragment result taken from each job's summary table
+            perl -e '
+              my (%res, %tests, @jobs);
+              for my $d (sort glob("reports/testbed-*")) {
+                (my $job = $d) =~ s{^reports/testbed-}{}; $job =~ s/-latest//;
+                push @jobs, $job;
+                open my $fh, "<", "$d/REPORT.md" or next;
+                while (<$fh>) {
+                  next unless /^\| \[([^\]]+)\]\(#[^)]*\) \|.*\| \*\*(PASS|WARN|FAIL)\*\*/;
+                  $res{$1}{$job} = $2; $tests{$1} = 1;
+                }
+              }
+              print "| Fragment | ", join(" | ", @jobs), " |\n";
+              print "|---|", "---|" x @jobs, "\n";
+              for my $t (sort keys %tests) {
+                print "| $t | ", join(" | ", map { $res{$t}{$_} // "-" } @jobs), " |\n";
+              }
+            '
           } > reports/REPORT.md
           cat reports/REPORT.md >> "$GITHUB_STEP_SUMMARY"
 
