@@ -15,7 +15,8 @@ source "$here/lib/common.sh"
 usage() {
   cat <<'EOF'
 usage: testbed.sh [options]
-  --bnd <release|snapshot|version|jar>  bnd CLI to use (default: release)
+  --bnd <release|snapshot|rc|version|jar>
+                                        bnd CLI to use (default: release)
   --fragment <slug>                     test only this fragment (repeatable; see --list)
   --individual                          test every fragment in its own workspace
   --all-in-one                          test all non-archived fragments in one workspace

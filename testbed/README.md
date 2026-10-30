@@ -43,16 +43,19 @@ reachable.
 bash testbed/testbed.sh --list                                  # fragment slugs
 bash testbed/testbed.sh                                         # release bnd, individual + all-in-one
 bash testbed/testbed.sh --bnd snapshot --include-archived
+bash testbed/testbed.sh --bnd rc                                # newest release candidate newer than the release
 bash testbed/testbed.sh --fragment demo-webapp --fragment eclipse-apps__headless
 bash testbed/testbed.sh --bnd 7.4.0 --skip-run --keep-all
+bash testbed/testbed.sh --bnd 7.5.0-RC1
 bash testbed/testbed.sh --bnd /path/to/biz.aQute.bnd.jar
+bash testbed/lib/fetch-bnd.sh --list-rc                         # RC versions newer than the release
 ```
 
 Options:
 
 | Option | Meaning |
 | --- | --- |
-| `--bnd release\|snapshot\|<version>\|<jar>` | bnd CLI; `release` from Maven Central, `snapshot` latest timestamped build from `bndtools.jfrog.io` (default `release`) |
+| `--bnd release\|snapshot\|rc\|<version>\|<jar>` | bnd CLI; `release` from Maven Central, `snapshot` latest timestamped build and `rc` newest release candidate newer than the release from `bndtools.jfrog.io`; `<version>` like `7.4.0` or `7.5.0-RC1` (default `release`) |
 | `--fragment <slug>` | test only this fragment (repeatable) |
 | `--individual` / `--all-in-one` | select test kinds (default: both) |
 | `--include-archived` | also test archived Eclipse fragments individually |
@@ -84,7 +87,9 @@ Exit code is `1` when any step failed.
     ws/                kept only on failure (or --keep-all)
 ```
 
-In CI the report summary is written to the job summary and the whole work
+In CI a `plan` job builds the bnd matrix: `release`, `snapshot` and every
+release candidate newer than the release (newest RC per version). The report
+summary is written to the job summary and the whole work
 directory (minus repository caches) is uploaded as artifact
 `testbed-<os>-<bnd>`; the `summary` job publishes `testbed-all` with one
 `REPORT.md` per matrix entry.

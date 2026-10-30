@@ -21,15 +21,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  plan:
+    name: Plan bnd versions
+    runs-on: ubuntu-latest
+    outputs:
+      bnd: ${{ steps.plan.outputs.bnd }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect release, snapshot and newer release candidates
+        id: plan
+        shell: bash
+        run: |
+          list='"release","snapshot"'
+          while IFS= read -r v; do
+            [[ -n "$v" ]] && list="$list,\"$v\""
+          done < <(bash testbed/lib/fetch-bnd.sh --list-rc)
+          echo "bnd=[$list]" >> "$GITHUB_OUTPUT"
+          echo "bnd matrix: [$list]"
+
   testbed:
     name: ${{ matrix.os }} / bnd ${{ matrix.bnd }}
+    needs: plan
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        bnd: [release, snapshot]
+        bnd: ${{ fromJSON(needs.plan.outputs.bnd) }}
     steps:
       - uses: actions/checkout@v4
 
