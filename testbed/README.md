@@ -93,4 +93,6 @@ summary is written to the job summary and the whole work
 directory (minus repository caches) is uploaded as artifact
 `testbed-<os>-<bnd>`; the `summary` job publishes `testbed-all` with one
 `REPORT.md` per matrix entry plus a combined fragment x job result table in
-its job summary.
+its job summary. Both tables show the bnd CLI version (and Java) each job
+actually executed; every result cell links to the fragment section of that
+job's `REPORT.md` inside the artifact.

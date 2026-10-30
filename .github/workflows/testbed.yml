@@ -122,34 +122,38 @@ jobs:
           {
             echo "# Fragment testbed - all platforms"
             echo
-            echo "| Job | Result | Report |"
-            echo "|---|---|---|"
+            echo "| Job | bnd CLI | Java | Result | Report |"
+            echo "|---|---|---|---|---|"
             for d in reports/testbed-*; do
               name="${d#reports/}"
               if [[ -f "$d/REPORT.md" ]]; then
                 res="$(grep -m1 -oE '[0-9]+ test\(s\), [0-9]+ failed, [0-9]+ with warnings' "$d/REPORT.md" || echo 'unknown')"
-                echo "| $name | $res | [REPORT.md]($name/REPORT.md) |"
+                bnd="$(sed -nE 's/^\| bnd_version \| `([^`]*)` \|$/\1/p' "$d/REPORT.md" | head -1)"
+                java="$(sed -nE 's/^\| java \| `([^`]*)` \|$/\1/p' "$d/REPORT.md" | head -1)"
+                echo "| $name | \`${bnd:-?}\` | \`${java:-?}\` | $res | [REPORT.md]($name/REPORT.md) |"
               else
-                echo "| $name | no report | |"
+                echo "| $name | | | no report | |"
               fi
             done
             echo
             echo "## Fragments x jobs"
             echo
-            # per fragment result taken from each job's summary table
+            # per fragment result taken from each job's summary table; first row = executed bnd CLI
             perl -e '
-              my (%res, %tests, @jobs, %dir);
+              my (%res, %tests, @jobs, %cli);
               for my $d (sort glob("reports/testbed-*")) {
                 (my $job = $d) =~ s{^reports/testbed-}{}; $job =~ s/-latest//;
-                push @jobs, $job; (my $rel = $d) =~ s{^reports/}{}; $dir{$job} = $rel;
+                push @jobs, $job; (my $rel = $d) =~ s{^reports/}{};
                 open my $fh, "<", "$d/REPORT.md" or next;
                 while (<$fh>) {
+                  $cli{$job} = "`$1`" if /^\| bnd_version \| `([^`]*)` \|/;
                   next unless /^\| \[([^\]]+)\]\(#([^)]*)\) \|.*\| \*\*(PASS|WARN|FAIL)\*\*/;
                   $res{$1}{$job} = "[$3]($rel/REPORT.md#$2)"; $tests{$1} = 1;
                 }
               }
               print "| Fragment | ", join(" | ", @jobs), " |\n";
               print "|---|", "---|" x @jobs, "\n";
+              print "| *bnd CLI* | ", join(" | ", map { $cli{$_} // "-" } @jobs), " |\n";
               for my $t (sort keys %tests) {
                 print "| $t | ", join(" | ", map { $res{$t}{$_} // "-" } @jobs), " |\n";
               }
