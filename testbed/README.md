@@ -88,8 +88,12 @@ Exit code is `1` when any step failed.
     ws/                kept only on failure (or --keep-all)
 ```
 
-In CI a `plan` job builds the bnd matrix: `release`, `snapshot` and every
-release candidate newer than the release (newest RC per version). The report
+In CI, `TESTBED_BND_CHANNELS` in `.github/workflows/testbed.yml` controls the
+bnd matrix. It accepts a space- or comma-separated list of `release`,
+`snapshot`, and `rc`; `rc` expands to every release candidate newer than the
+latest release (newest RC per version). It defaults to `snapshot` so release
+and RC builds can be temporarily disabled without changing the matrix logic.
+The report
 summary is written to the job summary and the whole work
 directory (minus repository caches) is uploaded as artifact
 `testbed-<os>-<bnd>`; the `summary` job publishes `testbed-all` with one
