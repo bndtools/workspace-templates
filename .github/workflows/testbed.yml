@@ -17,9 +17,13 @@ env:
   # Space- or comma-separated: release, snapshot, rc. RC expands to every
   # release candidate newer than the latest release.
   TESTBED_BND_CHANNELS: snapshot
+  # Post the one-page overview as a sticky PR comment (same-repo PRs only).
+  TESTBED_PR_COMMENT: 'true'
 
 permissions:
   contents: read
+  checks: write
+  pull-requests: write
 
 concurrency:
   group: testbed-${{ github.ref }}
@@ -87,10 +91,47 @@ jobs:
         run: |
           if [[ -f testbed/work/ci/REPORT.md ]]; then
             # the summary cannot link into the artifact; keep the summary tables only
-            sed -n '1,/^## Issues/p' testbed/work/ci/REPORT.md >> "$GITHUB_STEP_SUMMARY"
-            echo "Full report with logs: artifact testbed-${{ matrix.os }}-${{ matrix.bnd }}" >> "$GITHUB_STEP_SUMMARY"
+            sed -n '1,/^## Issues/p' testbed/work/ci/REPORT.md | sed '$d' >> "$GITHUB_STEP_SUMMARY"
+            # issues incl. log tails, collapsed; relative links only work inside the artifact
+            issues="$(sed -n '/^## Issues/,/^## Details/p' testbed/work/ci/REPORT.md | sed '1d;$d' \
+              | perl -pe 's/\[([^\]]+)\]\((?!https?:)[^)]*\)/$1/g')"
+            if [[ -n "${issues//[[:space:]]/}" ]]; then
+              printf '\n<details><summary><b>Issues</b> (FAIL/WARN with log tails)</summary>\n\n%s\n\n</details>\n' "$issues" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo "Full report with logs: artifact [testbed-${{ matrix.os }}-${{ matrix.bnd }}]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts)" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "No report produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Annotations
+        if: always()
+        shell: bash
+        run: perl testbed/lib/annotate.pl testbed/work/ci/results.tsv "${{ matrix.os }} / bnd ${{ matrix.bnd }}"
+
+      - name: SWTBot JUnit check
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TESTBED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CHECK_NAME: SWTBot / ${{ matrix.os }} / bnd ${{ matrix.bnd }}
+          # fork PRs get a read-only token: annotate instead of creating a check
+          CREATE_CHECK: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          xml=()
+          while IFS= read -r f; do xml+=("$f"); done < <(find testbed/work/ci -path '*/logs/junit-*/TEST-*.xml' 2>/dev/null | sort)
+          if (( ${#xml[@]} == 0 )); then
+            echo "No SWTBot JUnit reports on this platform."
+            exit 0
+          fi
+          out="$RUNNER_TEMP/junit"
+          mkdir -p "$out"
+          perl testbed/lib/junit.pl "$out" "$CHECK_NAME" "${xml[@]}"
+          cat "$out/junit-summary.md" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$CREATE_CHECK" == "true" ]]; then
+            gh api "repos/$GITHUB_REPOSITORY/check-runs" --input "$out/junit-check.json" --jq .html_url \
+              || echo "::warning title=SWTBot check::could not create check run"
           fi
 
       - name: Upload report and kept workspaces
@@ -170,6 +211,13 @@ jobs:
         run: |
           perl testbed/lib/summary.pl reports "${{ needs.testbed.result }}" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > reports/OVERVIEW.md
           cat reports/OVERVIEW.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Sticky PR comment
+        if: always() && env.TESTBED_PR_COMMENT == 'true' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash testbed/lib/pr-comment.sh "$GITHUB_REPOSITORY" "${{ github.event.pull_request.number }}" reports/OVERVIEW.md
 
       - uses: actions/upload-artifact@v4
         with:

@@ -93,11 +93,28 @@ bnd matrix. It accepts a space- or comma-separated list of `release`,
 `snapshot`, and `rc`; `rc` expands to every release candidate newer than the
 latest release (newest RC per version). It defaults to `snapshot` so release
 and RC builds can be temporarily disabled without changing the matrix logic.
-The report
-summary is written to the job summary and the whole work
-directory (minus repository caches) is uploaded as artifact
-`testbed-<os>-<bnd>`; the `summary` job publishes `testbed-all` with one
-`REPORT.md` per matrix entry plus a combined `REPORT.md` artifact. The
-`summary` check displays a one-page overview with each job's bnd CLI version,
-Java version, test counts, and aggregated fragment outcomes; detailed
-per-step logs remain in the workflow artifacts.
+Results are visible in GitHub without downloading artifacts:
+
+- **Job summary**: each matrix job writes its `REPORT.md` summary table, plus
+  a collapsed *Issues* section with FAIL/WARN details and log tails.
+- **Annotations**: `lib/annotate.pl` turns every FAIL/WARN row of
+  `results.tsv` into an `::error`/`::warning` annotation on the run.
+- **SWTBot check**: `lib/junit.pl` turns the SWTBot JUnit XML
+  (`logs/junit-*/TEST-*.xml`) into a job-summary table, `::error` annotations
+  on the failing test source line, and a check run `SWTBot / <os> / bnd <bnd>`
+  created through the REST API. Fork PRs only get the summary and annotations
+  because their token cannot create checks.
+- **Combined report**: the `summary` job shows a one-page overview with each
+  job's bnd CLI version, Java version, test counts, and aggregated fragment
+  outcomes.
+- **PR comment**: for same-repository PRs, `lib/pr-comment.sh` posts the
+  overview as a single comment and updates it on each run. Set
+  `TESTBED_PR_COMMENT` to anything other than `true` to disable it.
+
+The bndtools organization only allows actions owned by bndtools or GitHub, so
+these surfaces are implemented with in-repository scripts and `gh api`
+instead of marketplace actions.
+
+Artifacts are still uploaded for full logs: the whole work directory (minus
+repository caches) as `testbed-<os>-<bnd>`, and `testbed-all` with one
+`REPORT.md` per matrix entry plus the combined `REPORT.md` and `OVERVIEW.md`.
