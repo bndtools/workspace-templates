@@ -1,14 +1,17 @@
--tester: biz.aQute.junit
+-tester: biz.aQute.tester
 -testunresolved: false
-Test-Cases: example.rcp.app.ui.swtbot.tests.SamplePartSWTBotTest
+
+-runpath: \
+	org.junit;version='[4.13.2,4.13.3)',\
+	org.hamcrest;version='[3.0.0,3.0.1)'
 
 -runproperties.swtbot: \
-    osgi.clean=true,\
-    launch.storage.dir=_rt/swtbot_cfg,\
-    tester.separatethread=true,\
-    tester.unresolved=false
+	osgi.clean=true,\
+	launch.storage.dir=_rt/swtbot_cfg,\
+	tester.separatethread=true,\
+	tester.unresolved=false
 
 -runrequires.swtbot: \
-    osgi.identity;filter:='(osgi.identity=org.eclipse.swtbot.swt.finder)',\
-    osgi.identity;filter:='(osgi.identity=org.eclipse.swtbot.junit4_x)',\
-    osgi.identity;filter:='(osgi.identity=example.rcp.app.ui.swtbot.tests)'
+	osgi.identity;filter:='(osgi.identity=org.eclipse.swtbot.swt.finder)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.swtbot.junit4_x)',\
+	osgi.identity;filter:='(osgi.identity=example.rcp.app.ui.swtbot.tests)'

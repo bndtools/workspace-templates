@@ -6,10 +6,10 @@ provides the `cnf/ext` repository configuration, without duplicating it here.
 
 | Fragment | Project | Example |
 | --- | --- | --- |
-| `headless` | `example.rcp.headless` | Terminal-only Equinox application |
-| `ui` | `example.rcp.ui` | SWT/JFace progress dialog |
-| `app-ui` | `example.rcp.app.ui` | Eclipse 4 product with application model, handlers, and CSS |
-| `swtbot-tests` | `example.rcp.app.ui.swtbot.tests` | SWTBot tests; also requires `app-ui` |
+| `headless` | [`example.rcp.headless`](headless/example.rcp.headless/README.md) | Terminal-only Equinox application |
+| `ui` | [`example.rcp.ui`](ui/example.rcp.ui/README.md) | SWT/JFace progress dialog |
+| `app-ui` | [`example.rcp.app.ui`](app-ui/example.rcp.app.ui/README.md) | Eclipse 4 product with application model, handlers, and CSS |
+| `swtbot-tests` | [`example.rcp.app.ui.swtbot.tests`](swtbot-tests/example.rcp.app.ui.swtbot.tests/README.md) | SWTBot tests; also requires `app-ui` |
 
 The examples are adapted from
 [example.bnd.rcp](https://github.com/peterkir/example.bnd.rcp).

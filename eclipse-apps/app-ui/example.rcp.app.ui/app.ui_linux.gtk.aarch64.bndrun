@@ -1,0 +1,9 @@
+-include: app.ui_shared.bndrun
+-runsystemcapabilities: \
+	osgi.native; \
+		osgi.native.osname:List<String>="linux"; \
+		osgi.native.processor:List<String>="aarch64"
+-runproperties.platform: \
+	osgi.arch=aarch64,\
+	osgi.os=linux,\
+	osgi.ws=gtk

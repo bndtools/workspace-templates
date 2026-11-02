@@ -9,5 +9,6 @@
 
 javac.source: 17
 javac.target: 17
+src: src
 
 Bundle-Version: 0.1.0.${tstamp}

@@ -1,0 +1,226 @@
+name: Fragment testbed
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      include_archived:
+        description: Also test archived Eclipse fragments individually
+        type: boolean
+        default: true
+  schedule:
+    - cron: '17 4 * * 1'
+
+env:
+  # Space- or comma-separated: release, snapshot, rc. RC expands to every
+  # release candidate newer than the latest release.
+  TESTBED_BND_CHANNELS: snapshot
+  # Post the one-page overview as a sticky PR comment (same-repo PRs only).
+  TESTBED_PR_COMMENT: 'true'
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: testbed-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    name: Plan bnd versions
+    runs-on: ubuntu-latest
+    outputs:
+      bnd: ${{ steps.plan.outputs.bnd }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect configured bnd versions
+        id: plan
+        shell: bash
+        run: |
+          matrix="$(bash testbed/lib/bnd-matrix.sh)"
+          echo "bnd=$matrix" >> "$GITHUB_OUTPUT"
+          echo "bnd matrix: $matrix"
+
+  testbed:
+    name: ${{ matrix.os }} / bnd ${{ matrix.bnd }}
+    needs: plan
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        bnd: ${{ fromJSON(needs.plan.outputs.bnd) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install xvfb
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -q && sudo apt-get install -y -q xvfb
+
+      - name: Install bash 5
+        if: runner.os == 'macOS'
+        run: brew list bash >/dev/null 2>&1 || brew install bash
+
+      - name: Run testbed
+        id: run
+        shell: bash
+        run: |
+          flags="--individual --all-in-one"
+          if [[ "${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.include_archived) }}" == "true" ]]; then
+            flags="$flags --include-archived"
+          fi
+          BASH=bash
+          # macOS ships bash 3.2; the testbed needs bash >= 4
+          if [[ "$RUNNER_OS" == "macOS" ]]; then BASH="$(brew --prefix)/bin/bash"; fi
+          "$BASH" testbed/testbed.sh --bnd "${{ matrix.bnd }}" $flags --work-dir testbed/work/ci
+
+      - name: Step summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f testbed/work/ci/REPORT.md ]]; then
+            # the summary cannot link into the artifact; keep the summary tables only
+            sed -n '1,/^## Issues/p' testbed/work/ci/REPORT.md | sed '$d' >> "$GITHUB_STEP_SUMMARY"
+            # issues incl. log tails, collapsed; relative links only work inside the artifact
+            issues="$(sed -n '/^## Issues/,/^## Details/p' testbed/work/ci/REPORT.md | sed '1d;$d' \
+              | perl -pe 's/\[([^\]]+)\]\((?!https?:)[^)]*\)/$1/g')"
+            if [[ -n "${issues//[[:space:]]/}" ]]; then
+              printf '\n<details><summary><b>Issues</b> (FAIL/WARN with log tails)</summary>\n\n%s\n\n</details>\n' "$issues" >> "$GITHUB_STEP_SUMMARY"
+            fi
+            echo >> "$GITHUB_STEP_SUMMARY"
+            echo "Full report with logs: artifact [testbed-${{ matrix.os }}-${{ matrix.bnd }}]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID#artifacts)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No report produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Annotations
+        if: always()
+        shell: bash
+        run: perl testbed/lib/annotate.pl testbed/work/ci/results.tsv "${{ matrix.os }} / bnd ${{ matrix.bnd }}"
+
+      - name: SWTBot JUnit check
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TESTBED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CHECK_NAME: SWTBot / ${{ matrix.os }} / bnd ${{ matrix.bnd }}
+          # fork PRs get a read-only token: annotate instead of creating a check
+          CREATE_CHECK: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          xml=()
+          while IFS= read -r f; do xml+=("$f"); done < <(find testbed/work/ci -path '*/logs/junit-*/TEST-*.xml' 2>/dev/null | sort)
+          if (( ${#xml[@]} == 0 )); then
+            echo "No SWTBot JUnit reports on this platform."
+            exit 0
+          fi
+          out="$RUNNER_TEMP/junit"
+          mkdir -p "$out"
+          perl testbed/lib/junit.pl "$out" "$CHECK_NAME" "${xml[@]}"
+          cat "$out/junit-summary.md" >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$CREATE_CHECK" == "true" ]]; then
+            gh api "repos/$GITHUB_REPOSITORY/check-runs" --input "$out/junit-check.json" --jq .html_url \
+              || echo "::warning title=SWTBot check::could not create check run"
+          fi
+
+      - name: Upload report and kept workspaces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testbed-${{ matrix.os }}-${{ matrix.bnd }}
+          path: |
+            testbed/work/ci
+            !testbed/work/ci/zips
+            !testbed/work/ci/**/cnf/cache/**
+            !testbed/work/ci/**/_rt/**
+            !testbed/work/ci/**/generated/**/*.jar
+          if-no-files-found: warn
+          retention-days: 14
+
+  summary:
+    name: Combined report
+    needs: testbed
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: testbed-*
+          path: reports
+
+      - name: Combine
+        shell: bash
+        run: |
+          {
+            echo "# Fragment testbed - all platforms"
+            echo
+            echo "| Job | bnd CLI | Java | Result | Report |"
+            echo "|---|---|---|---|---|"
+            for d in reports/testbed-*; do
+              name="${d#reports/}"
+              if [[ -f "$d/REPORT.md" ]]; then
+                res="$(grep -m1 -oE '[0-9]+ test\(s\), [0-9]+ failed, [0-9]+ with warnings' "$d/REPORT.md" || echo 'unknown')"
+                bnd="$(sed -nE 's/^\| bnd_version \| `([^`]*)` \|$/\1/p' "$d/REPORT.md" | head -1)"
+                java="$(sed -nE 's/^\| java \| `([^`]*)` \|$/\1/p' "$d/REPORT.md" | head -1)"
+                echo "| $name | \`${bnd:-?}\` | \`${java:-?}\` | $res | [REPORT.md]($name/REPORT.md) |"
+              else
+                echo "| $name | | | no report | |"
+              fi
+            done
+            echo
+            echo "## Fragments x jobs"
+            echo
+            # per fragment result taken from each job's summary table; first row = executed bnd CLI
+            perl -e '
+              my (%res, %tests, @jobs, %cli);
+              for my $d (sort glob("reports/testbed-*")) {
+                (my $job = $d) =~ s{^reports/testbed-}{}; $job =~ s/-latest//;
+                push @jobs, $job; (my $rel = $d) =~ s{^reports/}{};
+                open my $fh, "<", "$d/REPORT.md" or next;
+                while (<$fh>) {
+                  $cli{$job} = "`$1`" if /^\| bnd_version \| `([^`]*)` \|/;
+                  next unless /^\| \[([^\]]+)\]\(#([^)]*)\) \|.*\| \*\*(PASS|WARN|FAIL)\*\*/;
+                  $res{$1}{$job} = "[$3]($rel/REPORT.md#$2)"; $tests{$1} = 1;
+                }
+              }
+              print "| Fragment | ", join(" | ", @jobs), " |\n";
+              print "|---|", "---|" x @jobs, "\n";
+              print "| *bnd CLI* | ", join(" | ", map { $cli{$_} // "-" } @jobs), " |\n";
+              for my $t (sort keys %tests) {
+                print "| $t | ", join(" | ", map { $res{$t}{$_} // "-" } @jobs), " |\n";
+              }
+            '
+          } > reports/REPORT.md
+
+      - name: One-page check summary
+        if: always()
+        shell: bash
+        run: |
+          perl testbed/lib/summary.pl reports "${{ needs.testbed.result }}" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > reports/OVERVIEW.md
+          cat reports/OVERVIEW.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Sticky PR comment
+        if: always() && env.TESTBED_PR_COMMENT == 'true' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash testbed/lib/pr-comment.sh "$GITHUB_REPOSITORY" "${{ github.event.pull_request.number }}" reports/OVERVIEW.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: testbed-all
+          path: reports
+          retention-days: 14

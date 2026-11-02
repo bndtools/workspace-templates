@@ -9,3 +9,10 @@ Learn more about [Template Fragments in bnd / bndtools](https://bnd.bndtools.org
 
 See [Eclipse Application Templates](eclipse-apps/README.md) for headless, SWT,
 Eclipse 4 product, and SWTBot examples using the latest Eclipse Platform fragment.
+
+## Testing The Fragments
+
+The [testbed](testbed/README.md) installs every fragment with the latest bnd
+release and snapshot CLI into clean workspaces, builds, resolves and launches
+the examples and writes a markdown report. It runs locally and in
+[GitHub Actions](.github/workflows/testbed.yml).
