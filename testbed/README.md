@@ -93,7 +93,7 @@ release candidate newer than the release (newest RC per version). The report
 summary is written to the job summary and the whole work
 directory (minus repository caches) is uploaded as artifact
 `testbed-<os>-<bnd>`; the `summary` job publishes `testbed-all` with one
-`REPORT.md` per matrix entry plus a combined fragment x job result table in
-its job summary. Both tables show the bnd CLI version (and Java) each job
-actually executed; every result cell links to the fragment section of that
-job's `REPORT.md` inside the artifact.
+`REPORT.md` per matrix entry plus a combined `REPORT.md` artifact. The
+`summary` check displays a one-page overview with each job's bnd CLI version,
+Java version, test counts, and aggregated fragment outcomes; detailed
+per-step logs remain in the workflow artifacts.

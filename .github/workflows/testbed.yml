@@ -159,7 +159,13 @@ jobs:
               }
             '
           } > reports/REPORT.md
-          cat reports/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: One-page check summary
+        if: always()
+        shell: bash
+        run: |
+          perl testbed/lib/summary.pl reports "${{ needs.testbed.result }}" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > reports/OVERVIEW.md
+          cat reports/OVERVIEW.md >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         with:
