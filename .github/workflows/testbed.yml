@@ -4,14 +4,26 @@ on:
   push:
     branches: [master]
   pull_request:
+  workflow_call:
+    inputs:
+      bnd_artifact:
+        description: Same-run artifact containing the source-built biz.aQute.bnd.jar
+        type: string
+        required: true
+      templates_ref:
+        description: workspace-templates revision to test
+        type: string
+        default: master
+      include_archived:
+        description: Also test archived Eclipse fragments individually
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       include_archived:
         description: Also test archived Eclipse fragments individually
         type: boolean
         default: true
-  schedule:
-    - cron: '17 4 * * 1'
 
 env:
   # Space- or comma-separated: release, snapshot, rc. RC expands to every
@@ -37,12 +49,21 @@ jobs:
       bnd: ${{ steps.plan.outputs.bnd }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.bnd_artifact != '' && 'bndtools/workspace-templates' || github.repository }}
+          ref: ${{ inputs.templates_ref || github.sha }}
 
       - name: Collect configured bnd versions
         id: plan
         shell: bash
+        env:
+          BND_ARTIFACT: ${{ inputs.bnd_artifact }}
         run: |
-          matrix="$(bash testbed/lib/bnd-matrix.sh)"
+          if [[ -n "$BND_ARTIFACT" ]]; then
+            matrix='["source"]'
+          else
+            matrix="$(bash testbed/lib/bnd-matrix.sh)"
+          fi
           echo "bnd=$matrix" >> "$GITHUB_OUTPUT"
           echo "bnd matrix: $matrix"
 
@@ -58,6 +79,16 @@ jobs:
         bnd: ${{ fromJSON(needs.plan.outputs.bnd) }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.bnd_artifact != '' && 'bndtools/workspace-templates' || github.repository }}
+          ref: ${{ inputs.templates_ref || github.sha }}
+
+      - name: Download source-built bnd CLI
+        if: inputs.bnd_artifact != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.bnd_artifact }}
+          path: bnd-cli
 
       - uses: actions/setup-java@v4
         with:
@@ -75,15 +106,25 @@ jobs:
       - name: Run testbed
         id: run
         shell: bash
+        env:
+          BND_SPEC: ${{ matrix.bnd }}
+          BND_ARTIFACT: ${{ inputs.bnd_artifact }}
         run: |
           flags="--individual --all-in-one"
-          if [[ "${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.include_archived) }}" == "true" ]]; then
+          if [[ "${{ (inputs.bnd_artifact != '' && inputs.include_archived) || (inputs.bnd_artifact == '' && github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.include_archived)) }}" == "true" ]]; then
             flags="$flags --include-archived"
+          fi
+          if [[ -n "$BND_ARTIFACT" ]]; then
+            BND_SPEC="$PWD/bnd-cli/biz.aQute.bnd.jar"
+            if [[ ! -s "$BND_SPEC" ]]; then
+              echo "::error::Source-built bnd CLI missing: $BND_SPEC"
+              exit 1
+            fi
           fi
           BASH=bash
           # macOS ships bash 3.2; the testbed needs bash >= 4
           if [[ "$RUNNER_OS" == "macOS" ]]; then BASH="$(brew --prefix)/bin/bash"; fi
-          "$BASH" testbed/testbed.sh --bnd "${{ matrix.bnd }}" $flags --work-dir testbed/work/ci
+          "$BASH" testbed/testbed.sh --bnd "$BND_SPEC" $flags --work-dir testbed/work/ci
 
       - name: Step summary
         if: always()
@@ -155,6 +196,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.bnd_artifact != '' && 'bndtools/workspace-templates' || github.repository }}
+          ref: ${{ inputs.templates_ref || github.sha }}
 
       - uses: actions/download-artifact@v4
         with:

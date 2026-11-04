@@ -115,6 +115,29 @@ The bndtools organization only allows actions owned by bndtools or GitHub, so
 these surfaces are implemented with in-repository scripts and `gh api`
 instead of marketplace actions.
 
+### CI for bnd source changes
+
+The [bnd fragment testbed workflow](https://github.com/bndtools/bnd/blob/master/.github/workflows/fragment-testbed.yml)
+runs on pull requests, every branch push (including `master`), and manual
+dispatch. It builds `:biz.aQute.bnd:build` with the Gradle wrapper, skipping
+unit and OSGi tests already covered by bnd's main CI, and uploads
+`biz.aQute.bnd/generated/biz.aQute.bnd.jar` as a same-run artifact.
+It then calls this repository's reusable `testbed.yml` workflow at `master`.
+
+The reusable workflow requires `bnd_artifact` (the artifact name) and accepts
+`templates_ref` (default `master`) and `include_archived` (default `false`).
+It checks out **workspace-templates**, not the caller's source tree, downloads
+the CLI artifact on each OS, and tests that exact JAR instead of a published
+snapshot. A missing JAR fails the job rather than falling back to a snapshot.
+Reports, checks, artifacts, and same-repository PR comments belong to the
+calling bnd run; fork PRs only receive summaries and annotations.
+The bnd caller enables archived fragments for pushes and manual runs, but
+not PRs. Native workspace-templates runs retain their configured bnd channels.
+
+When rolling out this integration, merge the reusable workflow here before
+enabling the caller in bnd. Both repositories' default-branch workflow
+statuses are linked by badges in the root [README](../README.md).
+
 Artifacts are still uploaded for full logs: the whole work directory (minus
 repository caches) as `testbed-<os>-<bnd>`, and `testbed-all` with one
 `REPORT.md` per matrix entry plus the combined `REPORT.md` and `OVERVIEW.md`.
