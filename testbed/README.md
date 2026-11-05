@@ -115,28 +115,43 @@ The bndtools organization only allows actions owned by bndtools or GitHub, so
 these surfaces are implemented with in-repository scripts and `gh api`
 instead of marketplace actions.
 
-### CI for bnd source changes
+### Independent CI for bnd master
 
-The [bnd fragment testbed workflow](https://github.com/bndtools/bnd/blob/master/.github/workflows/fragment-testbed.yml)
-runs on pull requests, every branch push (including `master`), and manual
-dispatch. It builds `:biz.aQute.bnd:build` with the Gradle wrapper, skipping
-unit and OSGi tests already covered by bnd's main CI, and uploads
+[Poll bnd master](../.github/workflows/poll-bnd-master.yml) runs every
+15 minutes and can also be started manually. It reads the public master
+commit SHA from `bndtools/bnd` and compares it with the most recently
+dispatched [bnd master fragment testbed](../.github/workflows/bnd-master.yml).
+An unchanged SHA does not start another build, including when its previous
+run failed or is still running. Failed runs can be rerun in Actions.
+
+For a new SHA, the poller dispatches the source testbed **in this repository**
+using its own `GITHUB_TOKEN` with `actions: write`. No cross-repository
+credential, webhook, workflow, check, status, or comment is added to bnd.
+Only public source reads go to bnd; failures cannot affect its CI or merges.
+GitHub schedules and runner availability can delay execution. Multiple
+master updates between polls are coalesced to the latest revision, and
+GitHub concurrency keeps at most one running and one pending source run.
+
+The source workflow checks out the immutable bnd SHA, builds
+`:biz.aQute.bnd:build` with the Gradle wrapper (skipping unit and OSGi tests
+covered by bnd's CI), and uploads
 `biz.aQute.bnd/generated/biz.aQute.bnd.jar` as a same-run artifact.
-It then calls this repository's reusable `testbed.yml` workflow at `master`.
+It calls the local reusable `testbed.yml` at the same workspace-templates
+revision, with archived fragments enabled. For a manual source run, supply
+the full bnd master commit SHA as `bnd_sha`.
 
 The reusable workflow requires `bnd_artifact` (the artifact name) and accepts
 `templates_ref` (default `master`) and `include_archived` (default `false`).
 It checks out **workspace-templates**, not the caller's source tree, downloads
 the CLI artifact on each OS, and tests that exact JAR instead of a published
 snapshot. A missing JAR fails the job rather than falling back to a snapshot.
-Reports, checks, artifacts, and same-repository PR comments belong to the
-calling bnd run; fork PRs only receive summaries and annotations.
-The bnd caller enables archived fragments for pushes and manual runs, but
-not PRs. Native workspace-templates runs retain their configured bnd channels.
+Reports, checks, and artifacts belong only to workspace-templates.
+Source runs do not post PR comments. Native workspace-templates runs retain
+their configured bnd channels, PR comments, and separate concurrency group.
+The root [README](../README.md) links both workflow status badges.
 
-When rolling out this integration, merge the reusable workflow here before
-enabling the caller in bnd. Both repositories' default-branch workflow
-statuses are linked by badges in the root [README](../README.md).
+Both new workflows must be merged to the default branch before polling and
+manual dispatch are available. No change in bnd is needed.
 
 Artifacts are still uploaded for full logs: the whole work directory (minus
 repository caches) as `testbed-<os>-<bnd>`, and `testbed-all` with one
