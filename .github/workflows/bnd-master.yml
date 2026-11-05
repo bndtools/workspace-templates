@@ -1,0 +1,68 @@
+name: bnd master fragment testbed
+run-name: bnd master ${{ inputs.bnd_sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      bnd_sha:
+        description: Full bnd master commit SHA to build and test
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: bnd-master-fragment-testbed
+  cancel-in-progress: false
+
+jobs:
+  cli:
+    name: Build bnd master CLI
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Validate bnd revision
+        shell: bash
+        env:
+          BND_SHA: ${{ inputs.bnd_sha }}
+        run: |
+          if [[ ! "$BND_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::bnd_sha must be a full 40-character commit SHA."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          repository: bndtools/bnd
+          ref: ${{ inputs.bnd_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c
+
+      - name: Build CLI from the detected master commit
+        run: ./gradlew --no-daemon :biz.aQute.bnd:build -x test -x testOSGi
+
+      - name: Upload bnd CLI
+        uses: actions/upload-artifact@v4
+        with:
+          name: bnd-master-cli
+          path: biz.aQute.bnd/generated/biz.aQute.bnd.jar
+          if-no-files-found: error
+          retention-days: 14
+
+  testbed:
+    name: Test bnd master against workspace fragments
+    needs: cli
+    uses: ./.github/workflows/testbed.yml
+    with:
+      bnd_artifact: bnd-master-cli
+      templates_ref: ${{ github.sha }}
+      include_archived: true

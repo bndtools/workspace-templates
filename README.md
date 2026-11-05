@@ -1,7 +1,7 @@
 # workspace-templates
 
 [![Fragment testbed](https://github.com/bndtools/workspace-templates/actions/workflows/testbed.yml/badge.svg?branch=master)](https://github.com/bndtools/workspace-templates/actions/workflows/testbed.yml)
-[![bnd source fragment testbed](https://github.com/bndtools/bnd/actions/workflows/fragment-testbed.yml/badge.svg?branch=master)](https://github.com/bndtools/bnd/actions/workflows/fragment-testbed.yml)
+[![bnd master fragment testbed](https://github.com/bndtools/workspace-templates/actions/workflows/bnd-master.yml/badge.svg?branch=master)](https://github.com/bndtools/workspace-templates/actions/workflows/bnd-master.yml)
 
 Contains bnd workspace template fragments. 
 
@@ -20,6 +20,6 @@ The [testbed](testbed/README.md) installs every fragment with the latest bnd
 release and snapshot CLI into clean workspaces, builds, resolves and launches
 the examples and writes a markdown report. It runs locally and in
 [GitHub Actions](.github/workflows/testbed.yml).
-The bnd source fragment testbed also builds the CLI from each
-`bndtools/bnd` pull request and push (including `master`) and tests it against
-these fragments on Linux, Windows and macOS.
+The independent bnd master fragment testbed polls `bndtools/bnd` master every
+15 minutes and tests newly detected revisions on Linux, Windows and macOS.
+All builds and results stay in this repository; bnd CI is unaffected.

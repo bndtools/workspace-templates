@@ -38,7 +38,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: testbed-${{ github.ref }}
+  group: testbed-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
