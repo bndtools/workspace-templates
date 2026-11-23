@@ -3,7 +3,7 @@ set -euo pipefail
 IFS=$' \n\t'
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-channels="${TESTBED_BND_CHANNELS:-snapshot}"
+channels="${TESTBED_BND_CHANNELS:-release snapshot}"
 channels="${channels//,/ }"
 read -r -a selected <<< "$channels"
 
