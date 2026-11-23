@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.service.runnable.ApplicationLauncher;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -106,10 +105,9 @@ public class SamplePartSWTBotTest {
         // org.bndtools.applaunch tracks that service: it only
         // registers the ApplicationLauncher OSGi service (which triggers the
         // Eclipse 4 app and SWT Display creation) AFTER launcher.ready fires.
-        // Polling Display.getDefault() alone is insufficient because it is null
-        // until after ApplicationLauncher.launch() hands the main thread to the
-        // E4 app.  Wait for the ApplicationLauncher service first so we are sure
-        // the E4 startup sequence has actually been triggered.
+        // Display.getDefault() would create a Display on this background test
+        // thread if the E4 app has not created one yet. Wait for the launcher
+        // service, then look up the application's main-thread Display instead.
         long deadline = System.currentTimeMillis() + TIMEOUT_MS;
 
         // 1. Probe for ApplicationLauncher service (10 s max).
@@ -130,14 +128,14 @@ public class SamplePartSWTBotTest {
 
         // 2. Wait for the SWT Display — created by the E4 app on the main thread.
         //    Works in both bnd CLI and Eclipse IDE.
+        Thread mainThread = Thread.getAllStackTraces().keySet().stream()
+                .filter(thread -> "main".equals(thread.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Application main thread not found."));
         Display display = null;
         while (display == null && System.currentTimeMillis() < deadline) {
-            try {
-                display = Display.getDefault();
-            } catch (SWTException ex) {
-                if (ex.code != SWT.ERROR_THREAD_INVALID_ACCESS) throw ex;
-                Thread.sleep(200);
-            }
+            display = Display.findDisplay(mainThread);
+            if (display == null) Thread.sleep(200);
         }
         if (display == null) {
             throw new IllegalStateException(
