@@ -114,6 +114,7 @@ zip_fragment() { # slug path
   [[ "$parent" == "." ]] && parent=""
   while IFS= read -r f; do
     [[ -n "$f" ]] || continue
+    [[ -e "$repo/$f" || -L "$repo/$f" ]] || continue
     files+=("${f#"$parent"/}")
   done < <(git -C "$repo" ls-files -co --exclude-standard -- "$path")
   (( ${#files[@]} > 0 )) || die "no files for fragment $slug ($path)"
@@ -278,7 +279,14 @@ EOF
 }
 
 write_swtbot_harness() {
-  local file="$1" os="${HOST%%.*}" ws="${HOST#*.}" platform_arch java_arch
+  local file="$1" rel="$2" os="${HOST%%.*}" ws="${HOST#*.}" platform_arch java_arch
+  local app_property="eclipse.product=example.rcp.app.ui.product"
+  local app_bundle="example.rcp.app.ui" test_bundle="example.rcp.app.ui.swtbot.tests"
+  if [[ "$rel" == *example.rcp.tray.swtbot.tests/* ]]; then
+    app_property="eclipse.application=example.rcp.tray.application"
+    app_bundle="example.rcp.tray"
+    test_bundle="example.rcp.tray.swtbot.tests"
+  fi
   platform_arch="${HOST##*.}"
   java_arch="$platform_arch"
   ws="${ws%%.*}"
@@ -299,7 +307,7 @@ write_swtbot_harness() {
 -runtrace: true
 
 -runproperties: \\
-	eclipse.product=example.rcp.app.ui.product,\\
+	$app_property,\\
 	launch.keep=false,\\
 	launch.storage.dir=_rt/swtbot_cfg,\\
 	osgi.arch=$java_arch,\\
@@ -315,10 +323,10 @@ write_swtbot_harness() {
 -runrequires: \\
 	bnd.identity;id=org.bndtools.applaunch,\\
 	bnd.identity;id=org.eclipse.e4.rcp;type=org.eclipse.update.feature,\\
-	bnd.identity;id=example.rcp.app.ui,\\
+	bnd.identity;id=$app_bundle,\\
 	bnd.identity;id=org.eclipse.swtbot.swt.finder,\\
 	bnd.identity;id=org.eclipse.swtbot.junit4_x,\\
-	bnd.identity;id=example.rcp.app.ui.swtbot.tests,\\
+	bnd.identity;id=$test_bundle,\\
 	bnd.identity;id=biz.aQute.tester
 EOF
   {
@@ -339,7 +347,7 @@ step_run_swtbot() {
     record run "$rel" SKIP 0 - "SWTBot harness setup failed"
     return
   fi
-  write_swtbot_harness "$harness"
+  write_swtbot_harness "$harness" "$rel"
   next_log resolve-swtbot-harness; log="$LOG"
   ( cd "$WS" && bnd resolve resolve -W "$harness_rel" ) >"$log" 2>&1 || rc=$?
   if (( rc != 0 )) || grep -qE 'Unable to resolve|Resolution failed|^! ' "$log"; then

@@ -1,0 +1,12 @@
+-include: tray_shared.bndrun
+-runvm: \
+	-XstartOnFirstThread,\
+	--enable-native-access=ALL-UNNAMED
+-runsystemcapabilities: \
+	osgi.native; \
+		osgi.native.osname:List<String>="macosx"; \
+		osgi.native.processor:List<String>="x86-64"
+-runproperties.platform: \
+	osgi.arch=x86_64,\
+	osgi.os=macosx,\
+	osgi.ws=cocoa
