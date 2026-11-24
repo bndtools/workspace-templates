@@ -91,8 +91,8 @@ Exit code is `1` when any step failed.
 In CI, `TESTBED_BND_CHANNELS` in `.github/workflows/testbed.yml` controls the
 bnd matrix. It accepts a space- or comma-separated list of `release`,
 `snapshot`, and `rc`; `rc` expands to every release candidate newer than the
-latest release (newest RC per version). It defaults to `snapshot` so release
-and RC builds can be temporarily disabled without changing the matrix logic.
+latest release (newest RC per version). It defaults to `release snapshot`;
+the release channel follows the latest published release rather than a fixed version.
 Results are visible in GitHub without downloading artifacts:
 
 - **Job summary**: each matrix job writes its `REPORT.md` summary table, plus

@@ -28,7 +28,7 @@ on:
 env:
   # Space- or comma-separated: release, snapshot, rc. RC expands to every
   # release candidate newer than the latest release.
-  TESTBED_BND_CHANNELS: snapshot
+  TESTBED_BND_CHANNELS: release snapshot
   # Post the one-page overview as a sticky PR comment (same-repo PRs only).
   TESTBED_PR_COMMENT: 'true'
 
