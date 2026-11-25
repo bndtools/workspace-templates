@@ -89,20 +89,22 @@ def open_dialog(menu, item_name, title, message):
         raise AssertionError("Missing or duplicate menu item " + item_name)
     click_accessible(matches[0])
 
-    def matching_dialog():
+    def matching_dialog_with_button():
         for dialog in objects("alert") + objects("dialog"):
             descendants = list(walk(dialog))
             labels = [child.name for child in descendants if child.getRoleName() == "label"]
-            if title in labels and message in labels:
-                return dialog
+            if title not in labels or message not in labels:
+                continue
+            buttons = [child for child in descendants
+                       if child.getRoleName() == "push button" and child.name == "OK" and showing(child)]
+            if len(buttons) == 1:
+                return dialog, buttons[0]
         return None
 
-    dialog = wait_for(title + " dialog and message", matching_dialog)
-    buttons = [child for child in walk(dialog)
-               if child.getRoleName() == "push button" and child.name == "OK" and showing(child)]
-    if len(buttons) != 1:
-        raise AssertionError(title + " dialog must have one visible OK button")
-    click_accessible(buttons[0])
+    # The dialog and its message label can become showing before the OK button
+    # finishes rendering, so wait for both together instead of checking once.
+    dialog, button = wait_for(title + " dialog with one visible OK button", matching_dialog_with_button)
+    click_accessible(button)
     wait_for(title + " dialog to close",
              lambda: not any(title in [child.name for child in walk(dialog)
                                        if child.getRoleName() == "label"]

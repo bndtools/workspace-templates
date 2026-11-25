@@ -140,10 +140,15 @@ public static class TrayNative {
         throw "Timed out waiting for $description"
     }
 
-    function Click-Rect($rect, [bool]$right = $false) {
-        if ($rect.Right -le $rect.Left -or $rect.Bottom -le $rect.Top) {
-            throw "Element has no clickable bounds: $rect"
-        }
+    function Click-Rect([scriptblock]$rectProvider, [bool]$right = $false, [string]$description = 'element', $seconds = 5) {
+        # Elements can exist before their bounds are laid out (new tray icon,
+        # not-yet-rendered dialog button), so retry instead of failing once.
+        $rect = Wait-Until "clickable bounds for $description" {
+            $candidate = & $rectProvider
+            if ($candidate -and $candidate.Right -gt $candidate.Left -and $candidate.Bottom -gt $candidate.Top) {
+                return $candidate
+            }
+        } $seconds
         [TrayNative]::Click([int](($rect.Left + $rect.Right) / 2),
             [int](($rect.Top + $rect.Bottom) / 2), $right)
     }
@@ -177,7 +182,7 @@ public static class TrayNative {
                 $_.Current.Name -eq 'Show hidden icons'
             })
             if ($overflow.Count -eq 1) {
-                Click-Rect $overflow[0].Current.BoundingRectangle
+                Click-Rect ({ $overflow[0].Current.BoundingRectangle }).GetNewClosure() $false 'overflow button'
                 $script:expanded = $true
             }
         }
@@ -197,17 +202,17 @@ public static class TrayNative {
                         $_.Current.Name -eq 'Show hidden icons'
                     })
                     if ($buttons.Count -eq 1) {
-                        Click-Rect $buttons[0].Current.BoundingRectangle
+                        Click-Rect ({ $buttons[0].Current.BoundingRectangle }).GetNewClosure() $false 'overflow button'
                         $script:expanded = $true
                     }
                 }
             }
         }
         Start-Sleep -Milliseconds ([TrayNative]::GetDoubleClickTime() + 100)
-        Click-Rect $icon.Current.BoundingRectangle $right
+        Click-Rect ({ $icon.Current.BoundingRectangle }).GetNewClosure() $right 'tray icon'
         if ($doubleClick) {
             Start-Sleep -Milliseconds ([Math]::Max(1, [int]([TrayNative]::GetDoubleClickTime() / 4)))
-            Click-Rect $icon.Current.BoundingRectangle $right
+            Click-Rect ({ $icon.Current.BoundingRectangle }).GetNewClosure() $right 'tray icon'
             return
         }
         $popup = Wait-Until "application popup after right=$right" {
@@ -238,39 +243,34 @@ public static class TrayNative {
         if ($state -eq [uint32]::MaxValue -or ($state -band 3) -ne 0) {
             throw "Menu item $index disabled or unavailable."
         }
-        $rect = New-Object TrayNative+RECT
-        if (-not [TrayNative]::GetMenuItemRect([IntPtr]::Zero, $menu, $index, [ref]$rect)) {
-            throw "Cannot locate native menu item $index"
-        }
-        Click-Rect $rect
+        Click-Rect ({
+            $candidate = New-Object TrayNative+RECT
+            if ([TrayNative]::GetMenuItemRect([IntPtr]::Zero, $menu, $index, [ref]$candidate)) { $candidate }
+        }).GetNewClosure() $false "menu item $index"
     }
 
     function Check-Dialog([string]$title, [string]$message) {
-        $dialog = Wait-Until "native '$title' dialog" {
+        # The dialog, its message label and its OK button can appear across
+        # several redraws, so wait for all three together instead of once.
+        $state = Wait-Until "native '$title' dialog with message and OK button" {
             foreach ($window in [TrayNative]::Windows($appProcessId, '#32770')) {
-                if ([TrayNative]::Text($window) -ceq $title) { return $window }
+                if ([TrayNative]::Text($window) -cne $title) { continue }
+                $children = @([TrayNative]::Children($window))
+                $texts = @($children | ForEach-Object { [TrayNative]::Text($_) })
+                if ($texts -cnotcontains $message) { continue }
+                $buttons = @($children | Where-Object {
+                    [TrayNative]::ClassName($_) -eq 'Button' -and
+                    [TrayNative]::Text($_).Replace('&', '') -eq 'OK' -and [TrayNative]::IsWindowEnabled($_)
+                })
+                if ($buttons.Count -eq 1) { return @{ Dialog = $window; Button = $buttons[0] } }
             }
         }
-        $children = @([TrayNative]::Children($dialog))
-        $texts = @($children | ForEach-Object { [TrayNative]::Text($_) })
-        if ($texts -cnotcontains $message) {
-            throw "'$title' dialog text mismatch: [$($texts -join ', ')]"
-        }
-        $buttons = @($children | Where-Object {
-            [TrayNative]::ClassName($_) -eq 'Button' -and
-            [TrayNative]::Text($_).Replace('&', '') -eq 'OK' -and [TrayNative]::IsWindowEnabled($_)
-        })
-        if ($buttons.Count -ne 1) {
-            $details = @($children | ForEach-Object {
-                "class=$([TrayNative]::ClassName($_)) id=$([TrayNative]::GetDlgCtrlID($_)) enabled=$([TrayNative]::IsWindowEnabled($_)) text=$([TrayNative]::Text($_))"
-            })
-            throw "'$title' must expose one enabled OK button: $($details -join '; ')"
-        }
-        [void][TrayNative]::SetForegroundWindow($dialog)
-        $rect = New-Object TrayNative+RECT
-        if (-not [TrayNative]::GetWindowRect($buttons[0], [ref]$rect)) { throw 'Cannot locate OK button.' }
-        Click-Rect $rect
-        [void](Wait-Until "'$title' dialog to close" { -not [TrayNative]::IsWindow($dialog) })
+        [void][TrayNative]::SetForegroundWindow($state.Dialog)
+        Click-Rect ({
+            $candidate = New-Object TrayNative+RECT
+            if ([TrayNative]::GetWindowRect($state.Button, [ref]$candidate)) { $candidate }
+        }).GetNewClosure() $false 'OK button'
+        [void](Wait-Until "'$title' dialog to close" { -not [TrayNative]::IsWindow($state.Dialog) })
     }
 
     $left = @('Hello World...', 'About', 'Exit')
