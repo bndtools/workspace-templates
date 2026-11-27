@@ -106,12 +106,27 @@ def open_dialog(menu, item_name, title, message):
 
     # The dialog and its message label can become showing before its button
     # finishes rendering, so wait for both together instead of checking once.
-    dialog, button = wait_for(title + " dialog with one visible button", matching_dialog_with_button)
+    try:
+        dialog, button = wait_for(title + " dialog with one visible button", matching_dialog_with_button)
+    except AssertionError as timeout:
+        raise AssertionError(str(timeout) + "\n" + describe_top_level_dialogs()) from None
     click_accessible(button)
     wait_for(title + " dialog to close",
              lambda: not any(title in [child.name for child in walk(dialog)
                                        if child.getRoleName() == "label"]
                              for dialog in objects("alert") + objects("dialog")))
+
+
+def describe_top_level_dialogs():
+    """Dump every showing alert/dialog's labels and push buttons for diagnostics."""
+    lines = []
+    for dialog in objects("alert") + objects("dialog"):
+        labels = [child.name for child in walk(dialog) if child.getRoleName() == "label"]
+        buttons = [(child.name, showing(child))
+                   for child in walk(dialog) if child.getRoleName() == "push button"]
+        lines.append("dialog role=%s labels=%r buttons(name,showing)=%r"
+                      % (dialog.getRoleName(), labels, buttons))
+    return "\n".join(lines) if lines else "no alert/dialog objects are currently showing"
 
 
 def main():
