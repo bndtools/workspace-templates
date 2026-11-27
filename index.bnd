@@ -31,10 +31,21 @@
         name="Eclipse RCP E4 Application"; \
         description="Eclipse 4 application with model, handlers, and CSS."; \
         require="bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
+    bndtools/workspace-templates/eclipse-apps/tray-app; \
+        name="Eclipse RCP Tray Application"; \
+        description="SWT system tray application with menus and dialogs."; \
+        require="bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
+    bndtools/workspace-templates/eclipse-apps/swtbot-repo; \
+        name="Eclipse SWTBot Repository"; \
+        description="Shared SWTBot repository configuration for Eclipse application tests.", \
+    bndtools/workspace-templates/eclipse-apps/tray-app-swtbot-tests; \
+        name="Eclipse RCP Tray SWTBot Tests"; \
+        description="SWTBot tests for the tray application."; \
+        require="bndtools/workspace-templates/eclipse-apps/tray-app,bndtools/workspace-templates/eclipse-apps/swtbot-repo,bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
     bndtools/workspace-templates/eclipse-apps/swtbot-tests; \
         name="Eclipse RCP SWTBot Tests"; \
         description="SWTBot UI tests for the Eclipse 4 application example."; \
-        require="bndtools/workspace-templates/eclipse-apps/app-ui,bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
+        require="bndtools/workspace-templates/eclipse-apps/app-ui,bndtools/workspace-templates/eclipse-apps/swtbot-repo,bndtools/workspace-templates/eclipse/eclipse_4.41_platform", \
     mnlipp/de.mnl.osgi/de.mnl.osgi.bnd.repository/workspace-template; \
         name=IndexedMavenRepository; \
         description="Provide an OSGi repository derived from a subset of one or more maven repositories", \

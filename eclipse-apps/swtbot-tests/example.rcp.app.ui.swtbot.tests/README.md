@@ -7,8 +7,8 @@ This project contains SWTBot tests for the Eclipse 4 application in
 
 - Java 21 or newer.
 - Add both the `Eclipse RCP SWTBot Tests` and `Eclipse RCP E4 Application`
-  template fragments to a bnd workspace. The test fragment requires `app-ui`
-  and the Eclipse Platform fragment.
+  template fragments to a bnd workspace. The test fragment requires `app-ui`,
+  the Eclipse Platform fragment, and the shared SWTBot repository fragment.
 - Supported launch targets: Linux GTK x86-64, Windows x86-64, and macOS Cocoa
   x86-64 or aarch64.
 

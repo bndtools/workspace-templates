@@ -1,0 +1,4 @@
+# name = Eclipse RCP Launcher
+# releaseUrl = https://repo.maven.apache.org/maven2/
+
+org.bndtools:org.bndtools.applaunch:7.4.0

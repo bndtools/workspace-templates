@@ -68,6 +68,22 @@ Options:
 Environment: `JAVA_HOME`; `TESTBED_CURL_OPTS` for extra curl options (for
 example `--ssl-no-revoke` behind TLS interception).
 
+On Linux, CI runs the testbed and `trayer` on the same dedicated Xvfb display.
+The tray wrapper checks that `trayer` owns the X11 system-tray selection and
+forces GTK to use that X display. It fails if the host cannot start or stops
+during the run. To reproduce locally, install `xvfb`, `xauth`, `trayer`,
+Python 3, libX11, D-Bus, AT-SPI, `python3-pyatspi`, `xdotool` and
+`x11-utils`, then use:
+
+```bash
+NO_AT_BRIDGE=0 GTK_A11Y=always dbus-run-session -- xvfb-run -a \
+  bash testbed/lib/with-tray.sh bash testbed/testbed.sh \
+  --fragment eclipse-apps__tray-app --fragment eclipse-apps__tray-app-swtbot-tests
+```
+
+An existing desktop session may already have a tray host; the wrapper refuses
+to replace it. The usual automatic `xvfb-run` fallback alone provides no tray.
+
 Slugs are the fragment path with `/` replaced by `__`, e.g.
 `eclipse-apps__app-ui`, `eclipse__eclipse_4.41_platform`.
 

@@ -95,9 +95,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Install xvfb
+      - name: Install X11 and tray host
         if: runner.os == 'Linux'
-        run: sudo apt-get update -q && sudo apt-get install -y -q xvfb
+        run: sudo apt-get update -q && sudo apt-get install -y -q xvfb xauth trayer dbus-x11 at-spi2-core python3-pyatspi xdotool x11-utils
 
       - name: Install bash 5
         if: runner.os == 'macOS'
@@ -124,7 +124,13 @@ jobs:
           BASH=bash
           # macOS ships bash 3.2; the testbed needs bash >= 4
           if [[ "$RUNNER_OS" == "macOS" ]]; then BASH="$(brew --prefix)/bin/bash"; fi
-          "$BASH" testbed/testbed.sh --bnd "$BND_SPEC" $flags --work-dir testbed/work/ci
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            export PATH="/usr/bin:$PATH" NO_AT_BRIDGE=0 GTK_A11Y=always
+            dbus-run-session -- xvfb-run -a bash testbed/lib/with-tray.sh \
+              "$BASH" testbed/testbed.sh --bnd "$BND_SPEC" $flags --work-dir testbed/work/ci
+          else
+            "$BASH" testbed/testbed.sh --bnd "$BND_SPEC" $flags --work-dir testbed/work/ci
+          fi
 
       - name: Step summary
         if: always()
