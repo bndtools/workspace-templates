@@ -18,7 +18,7 @@ There is no product code here. Content is bnd config (`cnf/ext/*.bnd`, `*.bndrun
 | `cheatsheet/` | bnd macro/instruction reference project. |
 | `eclipse/eclipse_<pv>_platform`, `eclipse/eclipse_<pv>_simrel_<YYYY-MM>` | One Eclipse repository per fragment (P2 + indexed OSGi variants). See [eclipse/README.md](eclipse/README.md). |
 | `eclipse-apps/{headless,ui,app-ui,tray-app}` | Eclipse RCP examples; require the latest platform fragment. See [eclipse-apps/README.md](eclipse-apps/README.md). |
-| `eclipse-apps/{swtbot-tests,tray-app-swtbot-tests}` | SWTBot tests; require the latest platform, `swtbot-repo` and their app fragment (`app-ui` / `tray-app`). The tray tests use native Linux (X11/AT-SPI) and Windows drivers; macOS is not implemented and fails explicitly. |
+| `eclipse-apps/{swtbot-tests,tray-app-swtbot-tests}` | SWTBot tests; require the latest platform, `swtbot-repo` and their app fragment (`app-ui` / `tray-app`). The tray tests use native Linux (X11/AT-SPI) and Windows drivers; macOS is not implemented and fails explicitly. The Windows driver also fails explicitly, as a known/accepted limitation, on GitHub Actions hosted `windows-latest` runners (the tray icon never gets a valid bounding rectangle there); see the fragment README. |
 | `eclipse-apps/swtbot-repo` | Shared SWTBot p2 repository config (`cnf/ext`, no project); required by every SWTBot test fragment. |
 | `testbed/` | Test harness. See [testbed/README.md](testbed/README.md). |
 | `.github/workflows/` | `testbed.yml` (reusable), `poll-bnd-master.yml`, `bnd-master.yml`. |

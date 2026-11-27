@@ -69,6 +69,17 @@ application through Exit and must not share it with other test cases.
 
 Linux's complete Equinox/SWTBot lifecycle test has been exercised against a
 real Xvfb/trayer setup. Windows validation reached the real Hello World menu
-and message box, but subsequent runs lost desktop cursor access
-(`GetCursorPos` returned Win32 error 5). Full Windows lifecycle and
-double-click coverage remain unverified; this prerequisite fails explicitly.
+and message box on an interactive desktop, but subsequent runs lost desktop
+cursor access (`GetCursorPos` returned Win32 error 5). Full Windows lifecycle
+and double-click coverage remain unverified; this prerequisite fails
+explicitly.
+
+On GitHub Actions' hosted `windows-latest` runners the test currently
+**fails explicitly** rather than skipping: the application's notification
+area icon never reports a non-empty bounding rectangle through UI
+Automation, even though the same icon is found by name and the driver
+retries for several seconds. A CI screenshot taken at that point shows no
+application icon anywhere in the taskbar, including the overflow area,
+suggesting the icon does not render on that runner image. This has not been
+reproduced on an interactive Windows desktop and is tracked as a known,
+accepted CI limitation rather than a driver bug.
